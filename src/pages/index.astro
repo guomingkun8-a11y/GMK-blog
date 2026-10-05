@@ -1,0 +1,385 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { getGithubData } from "../lib/github";
+
+// 首页作品区：GitHub 真实仓库，取 star 数最高的 4 个，链接与 GitHub 一致
+const { repos } = await getGithubData();
+const featured = [...repos]
+  .sort((a, b) => b.stargazers_count - a.stargazers_count)
+  .slice(0, 4);
+
+const base = import.meta.env.BASE_URL;
+const notesHref = (id: string) => `${base}/notes#${id}`;
+// 缩略图文字：取仓库名前两段，如 TB_spider-gmk → TB SPIDER
+const thumbText = (name: string) =>
+  name.split(/[-_]/).slice(0, 2).join(" ").toUpperCase();
+---
+
+<Layout>
+  <SiteHeader />
+
+  <main class="home" id="top">
+    <div class="home__inner">
+      <!-- Hero -->
+      <section class="home__hero">
+        <p class="home__eyebrow" data-reveal>郭明坤 · 个人博客</p>
+        <h1 class="home__title" data-reveal>
+          工作、学习、生活，<br />
+          还有<em>这个社会</em>，<br />
+          都值得记上一笔。
+        </h1>
+        <p class="home__lead" data-reveal>
+          这里是我的个人博客👋，记录思考🧠，记录工作✍️，也记录生活✨。
+        </p>
+        <div class="home__pills" data-reveal>
+          <a class="home__pill" href={notesHref("work")}>工作</a>
+          <a class="home__pill" href={notesHref("study")}>学习</a>
+          <a class="home__pill" href={notesHref("life")}>生活</a>
+          <a class="home__pill" href={notesHref("society")}>社会讨论</a>
+        </div>
+      </section>
+
+      <!-- 我写什么 -->
+      <section class="home__section" id="topics">
+        <div class="home__section-head" data-reveal>
+          <h2 class="home__section-title">我写什么</h2>
+          <span class="home__section-index">01 / 05</span>
+        </div>
+        <ul class="home__list">
+          <li class="home__item" data-reveal>
+            <a class="home__item-link" href={notesHref("work")}>
+              <h3 class="home__item-label">工作</h3>
+              <p class="home__item-desc">24年专科毕业后在一家小外包公司实习爬虫，专升本之后在一家做国家电网的服务公司做开发，主要是公司业务端的开发，本科毕业之后现在又在电商公司做开发。</p>
+              <span class="home__item-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li class="home__item" data-reveal>
+            <a class="home__item-link" href={notesHref("study")}>
+              <h3 class="home__item-label">学习</h3>
+              <p class="home__item-desc">
+                新框架、新工具、AI
+                领域的新动态。
+              </p>
+              <span class="home__item-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li class="home__item" data-reveal>
+            <a class="home__item-link" href={notesHref("life")}>
+              <h3 class="home__item-label">生活</h3>
+              <p class="home__item-desc">
+                生活不止代码，还有很多有趣的事情，比如游戏，当然我也是一个特别讨厌代码的人。
+              </p>
+              <span class="home__item-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li class="home__item" data-reveal>
+            <a class="home__item-link" href={notesHref("society")}>
+              <h3 class="home__item-label">社会讨论</h3>
+              <p class="home__item-desc">
+                对热点事件和社会现象的看法。不一定对，主观看法，我觉得社会讨论能不断的提醒自己独立思考。
+              </p>
+              <span class="home__item-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 标语 -->
+      <section class="home__statement">
+        <p data-reveal>把日子写下来，把想法<em>留下来</em>。</p>
+      </section>
+
+      <!-- 新闻：横向滚动画廊 -->
+      <section class="obs" id="news">
+        <div class="obs__sticky">
+          <div class="obs__inner">
+            <div class="obs__intro">
+              <div class="obs__head">
+                <h2 class="home__section-title">新闻</h2>
+                <span class="home__section-index">02 / 05</span>
+              </div>
+              <p class="obs__lead">
+                值得关注的社会动态和热点，用镜头和文字记下来。往下滑，图片会带着你横着走。
+              </p>
+            </div>
+            <div class="obs__viewport">
+              <div class="obs__track">
+                <article class="obs__card">
+                  <div class="obs__card-img">
+                    <img
+                      src={`${import.meta.env.BASE_URL}/observations/city.jpg`}
+                      alt="城市街头的人流"
+                      loading="lazy"
+                    />
+                    <div class="obs__overlay" data-reveal>
+                      <h3 class="obs__name">城市的节奏</h3>
+                      <span class="obs__tag">城市</span>
+                    </div>
+                  </div>
+                </article>
+                <article class="obs__card">
+                  <div class="obs__card-img">
+                    <img
+                      src={`${import.meta.env.BASE_URL}/observations/metro.jpg`}
+                      alt="地铁通勤的人群"
+                      loading="lazy"
+                    />
+                    <div class="obs__overlay" data-reveal>
+                      <h3 class="obs__name">早高峰的表情</h3>
+                      <span class="obs__tag">日常</span>
+                    </div>
+                  </div>
+                </article>
+                <article class="obs__card">
+                  <div class="obs__card-img">
+                    <img
+                      src={`${import.meta.env.BASE_URL}/observations/neon.jpg`}
+                      alt="深夜的霓虹灯"
+                      loading="lazy"
+                    />
+                    <div class="obs__overlay" data-reveal>
+                      <h3 class="obs__name">深夜霓虹</h3>
+                      <span class="obs__tag">夜晚</span>
+                    </div>
+                  </div>
+                </article>
+                <article class="obs__card">
+                  <div class="obs__card-img">
+                    <img
+                      src={`${import.meta.env.BASE_URL}/observations/shop.jpg`}
+                      alt="街角的小店"
+                      loading="lazy"
+                    />
+                    <div class="obs__overlay" data-reveal>
+                      <h3 class="obs__name">街角小店</h3>
+                      <span class="obs__tag">生活</span>
+                    </div>
+                  </div>
+                </article>
+                <a class="obs__more" href={`${base}/news`} data-reveal>更多新闻 →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 一些作品：GitHub 真实仓库，star 数最高的 4 个 -->
+      <section class="home__section" id="work-cases">
+        <div class="home__section-head" data-reveal>
+          <h2 class="home__section-title">一些作品</h2>
+          <span class="home__section-index">03 / 05</span>
+        </div>
+        <div class="home__work-grid" data-reveal>
+          {featured.length === 0 ? (
+            <p class="page__empty">GitHub 数据暂时拉不到，稍后再试。</p>
+          ) : (
+            featured.map((r) => (
+              <a class="home__work-card" href={r.html_url} target="_blank" rel="noopener">
+                <div class="home__work-thumb"><span>{thumbText(r.name)}</span></div>
+                <div class="home__work-meta">
+                  <h3 class="home__work-name">{r.name}</h3>
+                  <span class="home__work-tag">
+                    {r.language ? `${r.language} · ` : ""}★ {r.stargazers_count}
+                  </span>
+                </div>
+              </a>
+            ))
+          )}
+        </div>
+        <a class="home__more" href={`${base}/works`}>更多作品 →</a>
+      </section>
+
+      <!-- 来聊 -->
+      <section class="home__partner" id="partner">
+        <div class="home__section-head" data-reveal>
+          <h2 class="home__section-title">有话想说？<br />随时来聊</h2>
+        </div>
+        <div class="home__partner-head">
+          <p data-reveal>
+            无论是技术交流、合作想法，还是看完某篇文章想聊两句——点下面的按钮，直接和我的
+            AI 分身开聊。
+          </p>
+          <p class="home__partner-note" data-reveal>
+            <strong>24 小时在线。</strong
+            >它有点贫嘴但很靠谱，常见问题都难不倒它。
+          </p>
+          <button class="home__cta" type="button" data-chat-open data-reveal
+            >说声 hi →</button
+          >
+        </div>
+      </section>
+
+      <!-- 关于 -->
+      <section class="home__section" id="about">
+        <div class="home__section-head" data-reveal>
+          <h2 class="home__section-title">关于我</h2>
+          <span class="home__section-index">04 / 05</span>
+        </div>
+        <ul class="home__list">
+          <li class="home__item" data-reveal>
+            <h3 class="home__item-label">一条不设限的路径</h3>
+            <p class="home__item-desc">
+              保存思考、保存学习
+            </p>
+          </li>
+          <li class="home__item" data-reveal>
+            <h3 class="home__item-label">技术与审美并重</h3>
+            <p class="home__item-desc">
+              熟悉可灵、即梦、Runway 等 AI
+              视频工具，偏好图生视频工作流；前端、后端、物联网都能上手，追求克制而高级的视觉表达。
+            </p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 联系 -->
+      <section class="home__section" id="contact">
+        <div class="home__section-head" data-reveal>
+          <h2 class="home__section-title">联系我</h2>
+          <span class="home__section-index">05 / 05</span>
+        </div>
+        <address class="home__contact" aria-label="个人联系方式">
+          <a
+            class="home__contact-item"
+            href="mailto:guomingkun8@gmail.com"
+            data-reveal
+          >
+            <span class="home__contact-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><rect x="3" y="5" width="18" height="14" rx="2"></rect><path
+                  d="m3 7 9 6 9-6"></path></svg
+              >
+            </span>
+            <span class="home__contact-text">
+              <span class="home__contact-label">Email</span>
+              <span class="home__contact-value">guomingkun8@gmail.com</span>
+            </span>
+            <span class="home__contact-arrow" aria-hidden="true">→</span>
+          </a>
+          <a
+            class="home__contact-item"
+            href="https://github.com/guomingkun8-a11y"
+            target="_blank"
+            rel="noopener"
+            data-reveal
+          >
+            <span class="home__contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="currentColor"
+                ><path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+                ></path></svg
+              >
+            </span>
+            <span class="home__contact-text">
+              <span class="home__contact-label">GitHub</span>
+              <span class="home__contact-value"
+                >github.com/guomingkun8-a11y</span
+              >
+            </span>
+            <span class="home__contact-arrow" aria-hidden="true">→</span>
+          </a>
+          <a
+            class="home__contact-item"
+            href="mailto:3317099646@qq.com"
+            data-reveal
+          >
+            <span class="home__contact-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path
+                  d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+                ></path></svg
+              >
+            </span>
+            <span class="home__contact-text">
+              <span class="home__contact-label">QQ 邮箱</span>
+              <span class="home__contact-value">3317099646@qq.com</span>
+            </span>
+            <span class="home__contact-arrow" aria-hidden="true">→</span>
+          </a>
+          <a
+            class="home__contact-item"
+            href="https://blog.csdn.net/gmk20011104"
+            target="_blank"
+            rel="noopener"
+            data-reveal
+          >
+            <span class="home__contact-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path d="M12 20h9"></path><path
+                  d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg
+              >
+            </span>
+            <span class="home__contact-text">
+              <span class="home__contact-label">CSDN</span>
+              <span class="home__contact-value">blog.csdn.net/gmk20011104</span>
+            </span>
+            <span class="home__contact-arrow" aria-hidden="true">→</span>
+          </a>
+        </address>
+      </section>
+    </div>
+  </main>
+
+  <!-- 聊天挂件（后期把 data-endpoint 指向大模型接口即可启用真对话） -->
+  <div class="chat-window" id="gmk-chat" data-endpoint="" hidden>
+    <div class="chat__head">
+      <span class="chat__avatar" aria-hidden="true">GMK</span>
+      <div class="chat__head-info">
+        <span class="chat__head-name">郭明坤的 AI 分身</span>
+        <span class="chat__head-status">在线 · 随便聊聊</span>
+      </div>
+      <button
+        class="chat__close"
+        type="button"
+        data-chat-close
+        aria-label="关闭聊天">×</button
+      >
+    </div>
+    <div class="chat__messages" aria-live="polite">
+      <div class="chat__msg chat__msg--bot">
+        哈喽，我是郭明坤的 AI 分身 🤖
+        技术问题、合作想法、还是单纯想唠两句——都可以说，我尽量不犯懒。
+      </div>
+    </div>
+    <form class="chat__input">
+      <input
+        class="chat__field"
+        type="text"
+        placeholder="输入消息…"
+        autocomplete="off"
+        maxlength="500"
+      />
+      <button class="chat__send" type="submit" aria-label="发送">➤</button>
+    </form>
+    <div class="chat__foot">内容由 AI 生成，仅供参考</div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}/obs-scroll.js`}></script>
+</Layout>

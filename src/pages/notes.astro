@@ -1,0 +1,69 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+// 四个内容分类：首页「我写什么」的 pills 和条目会跳到这里对应锚点
+const categories = [
+  {
+    id: "work",
+    name: "工作",
+    desc: "项目复盘、技术笔记、踩坑记录——财务转电商转 AI 开发这一路上的活儿。",
+  },
+  {
+    id: "study",
+    name: "学习",
+    desc: "新框架、新工具、AI 领域的新动态，学到什么写什么。",
+  },
+  {
+    id: "life",
+    name: "生活",
+    desc: "开店、画画、养狗，以及一切和代码无关的日子。",
+  },
+  {
+    id: "society",
+    name: "社会讨论",
+    desc: "对热点事件和社会现象的看法。不一定对，但一定独立思考。",
+  },
+];
+---
+
+<Layout title="随笔 | 郭明坤" description="郭明坤的随笔——工作、学习、生活与社会讨论的记录与思考。">
+  <SiteHeader />
+
+  <main class="page" id="top">
+    <div class="page__inner">
+      <section class="page__hero" data-reveal>
+        <p class="page__eyebrow">随笔</p>
+        <h1 class="page__title">
+          工作、学习、生活，<br />
+          都值得<em>记上一笔</em>。
+        </h1>
+        <p class="page__lead" data-reveal>
+          四个分类，想到哪写到哪。文章还在路上，先把架子搭好。
+        </p>
+      </section>
+
+      {categories.map((cat) => (
+        <section class="notes-cat" id={cat.id} data-reveal>
+          <div class="notes-cat__head">
+            <h2 class="page__h2">{cat.name}</h2>
+            <span class="page__count">0 篇</span>
+          </div>
+          <p class="notes-cat__desc">{cat.desc}</p>
+          <div class="page__empty">
+            <p>这个分类的文章还在写，敬请期待。</p>
+          </div>
+        </section>
+      ))}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
+</Layout>

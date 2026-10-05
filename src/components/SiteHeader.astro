@@ -1,0 +1,21 @@
+---
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pageHref = (path = '') => `${basePath}/${path}`;
+---
+
+<header class="site-header">
+	<div class="site-header__inner">
+		<a class="site-mark" href={pageHref()} aria-label="郭明坤首页">郭明坤</a>
+
+		<nav class="site-nav" aria-label="主导航">
+			<ul class="site-nav__links">
+				<li><a href={pageHref('notes')}>随笔</a></li>
+				<li><a href={pageHref('news')}>新闻</a></li>
+				<li><a href={pageHref('works')}>作品</a></li>
+				<li><a href={pageHref('about')}>关于</a></li>
+				<li><a href={pageHref('contact')}>联系</a></li>
+			</ul>
+			<button class="site-nav__cta" type="button" data-chat-open>与我聊聊</button>
+		</nav>
+	</div>
+</header>

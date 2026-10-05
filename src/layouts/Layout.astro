@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "郭明坤 | 个人博客",
+  description = "郭明坤的个人博客，记录工作、学习、生活与社会讨论。",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href={`${import.meta.env.BASE_URL}/favicon.svg`}
+    />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline defer src={`${import.meta.env.BASE_URL}/header-scroll.js`}></script>
+    <script is:inline set:html={`window.__GMK_AI__ = {
+      apiKey: ${JSON.stringify(import.meta.env.PUBLIC_AI_API_KEY ?? '')},
+      baseUrl: ${JSON.stringify(import.meta.env.PUBLIC_AI_BASE_URL ?? 'https://openrouter.ai/api/v1')},
+      model: ${JSON.stringify(import.meta.env.PUBLIC_AI_MODEL ?? 'qwen/qwen3.8-27b:free')},
+      fallbackModel: ${JSON.stringify(import.meta.env.PUBLIC_AI_FALLBACK_MODEL ?? 'openrouter/free')},
+      siteName: ${JSON.stringify(import.meta.env.PUBLIC_AI_SITE_NAME ?? '')},
+      systemPrompt: ${JSON.stringify(import.meta.env.PUBLIC_AI_SYSTEM_PROMPT ?? '')},
+    };`}></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <script is:inline src={`${import.meta.env.BASE_URL}/reveal.js`}></script>
+  </body>
+</html>
