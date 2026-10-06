@@ -1,0 +1,122 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import { getCollection, render } from "astro:content";
+import {
+  resolveNote,
+  displayDate,
+  isoDate,
+  type NoteEntry,
+} from "../../../lib/resolveNote";
+
+export async function getStaticPaths() {
+  const allNotes = await getCollection("notes");
+  return allNotes.map((entry) => {
+    const resolved = resolveNote(entry);
+    const { category, slug } = resolved;
+
+    // 同一分类下的兄弟文章，按时间倒序
+    const siblings = allNotes
+      .map((e) => resolveNote(e))
+      .filter((r) => r.category.id === category.id)
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+    const index = siblings.findIndex((item) => item.slug === slug);
+
+    return {
+      params: { category: category.id, slug },
+      props: {
+        entry,
+        category,
+        slug,
+        newer: index > 0 ? siblings[index - 1].entry : null,
+        older: index < siblings.length - 1 ? siblings[index + 1].entry : null,
+      },
+    };
+  });
+}
+
+interface Props {
+  entry: NoteEntry;
+  category: ReturnType<typeof resolveNote>["category"];
+  slug: string;
+  newer: NoteEntry | null;
+  older: NoteEntry | null;
+}
+
+const { entry, category, slug, newer, older } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const categoryHref = `${basePath}/notes/${category.id}`;
+
+const resolved = resolveNote(entry);
+const { title, summary, date, tags } = resolved;
+const dateStr = displayDate(date);
+const dateIso = isoDate(date);
+
+// 上一篇/下一篇标题也走兜底（无 frontmatter 时用文件名）
+const newerResolved = newer ? resolveNote(newer) : null;
+const olderResolved = older ? resolveNote(older) : null;
+const noteHref = (item: NoteEntry) =>
+  `${basePath}/notes/${category.id}/${resolveNote(item).slug}`;
+
+// 用 render() 把 Markdown 完整渲染成 HTML（支持标题、加粗、引用、表格、列表、链接等）
+const { Content } = await render(entry);
+---
+
+<Layout title={`${title} | 郭明坤`} description={summary}>
+  <SiteHeader />
+
+  <main class="article" id="top">
+    <div class="article__inner">
+      <a class="article__back" href={categoryHref}>← 返回{category.name}</a>
+
+      <header class="article__head" data-reveal>
+        <div class="article__meta">
+          <a href={categoryHref}>{category.name}</a>
+          <span aria-hidden="true">·</span>
+          <time datetime={dateIso}>{dateStr}</time>
+        </div>
+        <h1 class="article__title">{title}</h1>
+        <div class="article__tags">
+          {tags.map((tag) => <span>{tag}</span>)}
+        </div>
+        {summary && <p class="article__lead">{summary}</p>}
+      </header>
+
+      <div class="article__body">
+        <Content />
+      </div>
+
+      <nav class="article__nav" aria-label="文章导航" data-reveal>
+        {newer && newerResolved ? (
+          <a class="article__nav-item" href={noteHref(newer)}>
+            <span>较新一篇</span>
+            <strong>{newerResolved.title}</strong>
+          </a>
+        ) : (
+          <span class="article__nav-item article__nav-item--empty">
+            已经是最新一篇
+          </span>
+        )}
+        {older && olderResolved ? (
+          <a class="article__nav-item article__nav-item--next" href={noteHref(older)}>
+            <span>较早一篇</span>
+            <strong>{olderResolved.title}</strong>
+          </a>
+        ) : (
+          <span class="article__nav-item article__nav-item--empty">
+            已经是较早的一篇
+          </span>
+        )}
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
+</Layout>

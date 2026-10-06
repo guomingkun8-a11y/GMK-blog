@@ -14,7 +14,7 @@ REMOTE_DIR="/var/www/gmk-blog"
 WITH_DOCS="${1:-}"
 
 echo "==> 1/4 构建（服务器版：根路径 /）"
-DEPLOY_TARGET=server npm run build
+(cd frontend && DEPLOY_TARGET=server npm run build)
 
 echo "==> 2/4 服务器准备（安装 nginx、建目录）"
 ssh -i "$KEY" "$HOST" "mkdir -p $REMOTE_DIR && (which nginx >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq nginx))"
@@ -22,7 +22,7 @@ ssh -i "$KEY" "$HOST" "mkdir -p $REMOTE_DIR && (which nginx >/dev/null 2>&1 || (
 echo "==> 3/4 上传站点文件"
 EXCLUDE="--exclude=./docs"
 if [ "$WITH_DOCS" = "--docs" ]; then EXCLUDE=""; fi
-tar -C dist -cf - $EXCLUDE . | ssh -i "$KEY" "$HOST" "tar -C $REMOTE_DIR -xf -"
+tar -C frontend/dist -cf - $EXCLUDE . | ssh -i "$KEY" "$HOST" "tar -C $REMOTE_DIR -xf -"
 
 echo "==> 4/4 分发 nginx 配置并重载"
 scp -i "$KEY" -q deploy/nginx-gmk-blog.conf "$HOST:/etc/nginx/sites-available/gmk-blog"

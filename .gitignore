@@ -3,9 +3,11 @@ dist/
 
 # generated types
 .astro/
+frontend/.astro/
 
 # dependencies
 node_modules/
+frontend/node_modules/
 
 # logs
 npm-debug.log*
@@ -13,9 +15,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
+# environment variables and credentials
 .env
 .env.production
+backend/.env
+*.pem
+*.key
+id_rsa
+id_ed25519
+credentials.json
+backend/.venv/
+backend/**/__pycache__/
 
 # macOS-specific files
 .DS_Store
@@ -32,11 +42,11 @@ pnpm-debug.log*
 .cache/
 
 # 大文件：PDF 资料库（3.1GB，不放 GitHub，走对象存储/CDN）
-public/docs/
+frontend/public/docs/
 
 # 本地工作记录（AI 助手的工作笔记，不入库）
 .workbuddy/
 
 # 旧的未压缩 starry_night 原文件（本地保留，项目只用 optimized 压缩版）
-public/models/starry_night_diorama_tilt_brush.glb
-public/models/starry_night_diorama_tilt_brush_web.glb
+frontend/public/models/starry_night_diorama_tilt_brush.glb
+frontend/public/models/starry_night_diorama_tilt_brush_web.glb

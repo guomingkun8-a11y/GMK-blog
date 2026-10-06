@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+---
+
+<Layout title="关于 | 郭明坤" description="郭明坤的个人博客——关于我、我的技术栈、我的经历与思考。">
+  <SiteHeader />
+
+  <main class="page" id="top">
+    <div class="page__inner">
+      <section class="page__hero" data-reveal>
+        <p class="page__eyebrow">关于我</p>
+          <h1 class="page__title">
+            我是一个普通的开发者。
+            <br>记录<em>所学、所思。</em>
+            <br>不设终点，只管向前。
+          </h1>
+      </section>
+
+      <section class="page__body">
+        <p class="page__lead" data-reveal>
+          人有三次死亡，肉体的死亡，社会意义上的死亡，以及最终被世人遗忘；所以我想留下些什么，证明我曾经来过。
+          <em>保存思考、保存学习</em>
+        </p>
+
+        <div class="page__story">
+          <h2 class="page__h2" data-reveal>XXXX</h2>
+          <p data-reveal>
+            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          </p>
+
+          <h2 class="page__h2" data-reveal>XXXXXXX</h2>
+          <p data-reveal>
+            现在是一名 AI 应用开发者，主要折腾这些：
+          </p>
+          <ul class="page__list" data-reveal>
+            <li><strong>XXXX</strong> —— XXXXX</li>
+            <li><strong>XXXXX</strong> —— XXXX</li>
+            <li><strong>XXXX</strong> —— XXXX</li>
+          </ul>
+          <h2 class="page__h2" data-reveal>技术栈</h2>
+          <p data-reveal>   
+          </p>
+        </div>
+
+        <p class="page__endnote" data-reveal>
+          这个博客是我的公开笔记——写做过的事、学到的东西、过成的日子，也写对这个社会的观察。
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
+</Layout>

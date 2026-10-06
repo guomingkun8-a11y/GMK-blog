@@ -1,11 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { getGithubData, formatStars, type Repo } from "../lib/github";
+import { getGithubData, formatStars, WORK_IMAGES, type Repo } from "../lib/github";
 
 // ===== 构建时抓取 GitHub 数据（服务端执行，不耗访客配额）=====
 const GITHUB_USER = "guomingkun8-a11y";
 const { repos, starred } = await getGithubData();
+const base = import.meta.env.BASE_URL;
+const workImage = (name: string) => WORK_IMAGES[name] ?? "";
 
 // 全部 star 项目：排除自己的仓库，按 star 数降序（不做精选截断，分页展示）
 const starredAll = starred
@@ -41,7 +43,10 @@ const starredAll = starred
           ) : (
             repos.map((r) => (
               <a class="page__work-card" href={r.html_url} target="_blank" rel="noopener">
-                <div class="page__work-thumb">
+                <div class:list={["page__work-thumb", { "page__work-thumb--photo": !!workImage(r.name) }]}>
+                  {workImage(r.name) && (
+                    <img src={`${base}/${workImage(r.name)}`} alt={`${r.name} 配图`} loading="lazy" />
+                  )}
                   <span>{r.name.replace(/[-_]/g, " ").slice(0, 14).toUpperCase()}</span>
                 </div>
                 <div class="page__work-meta">

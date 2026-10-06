@@ -1,0 +1,83 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import ForumSearch from "../components/ForumSearch.astro";
+import { getCollection } from "astro:content";
+import { noteCategories } from "../data/notes";
+import { resolveNote, displayDate, isoDate } from "../lib/resolveNote";
+
+const allNotes = await getCollection("notes").then((notes) =>
+  notes.map((entry) => resolveNote(entry))
+);
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const categoryHref = (id: string) => `${basePath}/notes/${id}`;
+---
+
+<Layout title="随笔 | 郭明坤" description="郭明坤的随笔——工作、学习、生活与社会讨论的记录与思考。">
+  <SiteHeader />
+
+  <main class="page" id="top">
+    <div class="page__inner">
+      <section class="page__hero" data-reveal>
+        <p class="page__eyebrow">随笔</p>
+        <h1 class="page__title">
+          工作、学习、生活，<br />
+          都值得<em>记上一笔</em>。
+        </h1>
+        <p class="page__lead" data-reveal>
+          每个分类都有独立页面。这里先看最近的几条，点进去再按时间慢慢读。
+        </p>
+      </section>
+
+      <ForumSearch />
+
+      <section class="notes-index" aria-label="随笔分类">
+        {noteCategories.map((category) => {
+          const entries = allNotes
+            .filter((note) => note.category.id === category.id)
+            .sort((a, b) => b.date.getTime() - a.date.getTime());
+          const preview = entries.slice(0, 2);
+
+          return (
+            <article class="notes-index__group" id={category.id} data-reveal>
+              <div class="notes-index__aside">
+                <p>{category.eyebrow}</p>
+                <h2>{category.name}</h2>
+                <span>{entries.length} 篇记录</span>
+              </div>
+
+              <div class="notes-index__content">
+                <p class="notes-index__desc">{category.desc}</p>
+                <ol class="notes-index__preview">
+                  {preview.map((item) => (
+                    <li>
+                      <a class="notes-index__preview-link" href={`${basePath}/notes/${category.id}/${item.slug}`}>
+                        <time datetime={isoDate(item.date)}>{displayDate(item.date)}</time>
+                        <div>
+                          <h3>{item.title}</h3>
+                          {item.summary && <p>{item.summary}</p>}
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+                <a class="notes-index__more" href={categoryHref(category.id)}>
+                  查看全部 {entries.length} 篇 <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
+</Layout>

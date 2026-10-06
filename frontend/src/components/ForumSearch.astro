@@ -1,0 +1,673 @@
+---
+const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "");
+---
+
+<section class="forum-search" data-forum-search data-api-base={apiBase} data-reveal>
+  <div class="forum-search__shell">
+    <div class="forum-search__head">
+      <div>
+        <div class="forum-search__eyebrow">
+          <span class="forum-search__pulse" aria-hidden="true"></span>
+          <span>全网检索</span>
+        </div>
+        <h2 class="forum-search__title">看看大家正在讨论什么</h2>
+        <p class="forum-search__intro">输入一个关键词，从公开网页中寻找真实讨论和不同观点。</p>
+      </div>
+      <span class="forum-search__source">Powered by SerpApi</span>
+    </div>
+
+    <form class="forum-search__form" data-forum-form>
+      <span class="forum-search__search-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m16.2 16.2 4.1 4.1"></path>
+        </svg>
+      </span>
+      <label class="sr-only" for="forum-query">搜索全网讨论</label>
+      <input id="forum-query" name="q" type="search" maxlength="120" placeholder="试试：AI 应用开发、独立开发者……" autocomplete="off" required />
+      <button type="submit">
+        <span class="forum-search__btn-label">搜索</span>
+        <span class="forum-search__btn-loading" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="forum-search__btn-arrow" aria-hidden="true">↗</span>
+      </button>
+    </form>
+
+    <div class="forum-search__status-row">
+      <p class="forum-search__status" data-forum-status role="status">输入关键词，去网上看看不同的人怎么说。</p>
+      <span class="forum-search__quota">每月 250 次免费额度</span>
+    </div>
+
+    <ol class="forum-search__results" data-forum-results></ol>
+  </div>
+</section>
+
+<script>
+  const roots = document.querySelectorAll<HTMLElement>("[data-forum-search]");
+
+  roots.forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>("[data-forum-form]");
+    const input = root.querySelector<HTMLInputElement>("[name='q']");
+    const status = root.querySelector<HTMLElement>("[data-forum-status]");
+    const results = root.querySelector<HTMLOListElement>("[data-forum-results]");
+    if (!form || !input || !status || !results) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = input.value.trim();
+      if (!query) return;
+
+      const button = form.querySelector<HTMLButtonElement>("button");
+      if (button) button.disabled = true;
+      form.classList.add("is-loading");
+      root.classList.remove("has-results");
+      status.textContent = `正在搜索「${query}」……`;
+      results.replaceChildren();
+
+      try {
+        const base = root.dataset.apiBase || "";
+        const url = new URL(`${base}/api/forums`, window.location.origin);
+        url.searchParams.set("q", query);
+        url.searchParams.set("limit", "10");
+        const response = await fetch(url);
+        const contentType = response.headers.get("content-type") || "";
+        const payload = contentType.includes("application/json")
+          ? await response.json().catch(() => ({}))
+          : {};
+        if (!response.ok) {
+          if (response.status === 502 || response.status === 503) {
+            throw new Error("搜索服务暂时离线，请确认后端已启动后再试");
+          }
+          throw new Error(payload.detail || "搜索失败，请稍后重试");
+        }
+
+        const items = Array.isArray(payload.results) ? payload.results : [];
+        status.textContent = items.length ? `找到 ${items.length} 条与「${query}」相关的结果` : "没有找到相关内容，换个关键词试试。";
+        root.classList.toggle("has-results", items.length > 0);
+
+        items.forEach((item: { title?: string; link?: string; source?: string; date?: string; snippet?: string }, index: number) => {
+          const entry = document.createElement("li");
+          entry.className = "forum-search__result";
+
+          const card = document.createElement("a");
+          card.className = "forum-search__result-card";
+          card.href = item.link || "#";
+          card.target = "_blank";
+          card.rel = "noreferrer noopener";
+
+          let hostname = "网页";
+          try { hostname = new URL(item.link || "").hostname.replace(/^www\./, ""); } catch { /* 保留默认值 */ }
+          const sourceName = item.source || hostname;
+
+          const top = document.createElement("div");
+          top.className = "forum-search__result-top";
+
+          const sourceIcon = document.createElement("span");
+          sourceIcon.className = "forum-search__source-icon";
+          sourceIcon.textContent = sourceName.trim().charAt(0).toUpperCase() || "W";
+
+          const sourceWrap = document.createElement("span");
+          sourceWrap.className = "forum-search__source-wrap";
+
+          const source = document.createElement("strong");
+          source.className = "forum-search__source-name";
+          source.textContent = sourceName;
+
+          const domain = document.createElement("span");
+          domain.className = "forum-search__domain";
+          domain.textContent = hostname;
+
+          sourceWrap.append(source, domain);
+
+          const number = document.createElement("span");
+          number.className = "forum-search__result-number";
+          number.textContent = String(index + 1).padStart(2, "0");
+
+          top.append(sourceIcon, sourceWrap, number);
+
+          const title = document.createElement("h3");
+          title.className = "forum-search__result-title";
+          title.textContent = item.title || "未命名讨论";
+
+          const snippet = document.createElement("p");
+          snippet.className = "forum-search__result-snippet";
+          snippet.textContent = item.snippet || "暂无摘要";
+
+          const foot = document.createElement("div");
+          foot.className = "forum-search__result-foot";
+
+          const date = document.createElement("span");
+          date.className = "forum-search__result-date";
+          date.textContent = item.date || "公开网页";
+
+          const action = document.createElement("span");
+          action.className = "forum-search__result-action";
+          action.innerHTML = "查看原文 <i aria-hidden='true'>↗</i>";
+
+          foot.append(date, action);
+          card.append(top, title, snippet, foot);
+          entry.append(card);
+          results.append(entry);
+        });
+      } catch (error) {
+        root.classList.remove("has-results");
+        status.textContent = error instanceof Error ? error.message : "搜索失败，请稍后重试";
+      } finally {
+        if (button) button.disabled = false;
+        form.classList.remove("is-loading");
+      }
+    });
+  });
+</script>
+
+<style>
+  .forum-search {
+    margin: 0 0 clamp(4rem, 8vw, 7rem);
+  }
+
+  .forum-search__shell {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid #e9e2ef;
+    border-radius: clamp(1.25rem, 3vw, 2rem);
+    background:
+      radial-gradient(circle at 90% 0%, rgba(168, 85, 247, 0.13), transparent 36%),
+      linear-gradient(145deg, #ffffff 0%, #fdfaff 100%);
+    box-shadow: 0 24px 70px rgba(70, 24, 104, 0.08);
+  }
+
+  .forum-search__shell::before {
+    position: absolute;
+    top: -7rem;
+    right: -5rem;
+    width: 15rem;
+    height: 15rem;
+    content: '';
+    border: 1px solid rgba(168, 85, 247, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .forum-search__head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .forum-search__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .forum-search__pulse {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .forum-search__pulse::after {
+    position: absolute;
+    inset: -0.3rem;
+    content: '';
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 50%;
+    animation: forum-pulse 2s ease-out infinite;
+  }
+
+  @keyframes forum-pulse {
+    0% { opacity: 0.8; transform: scale(0.65); }
+    70%, 100% { opacity: 0; transform: scale(1.35); }
+  }
+
+  .forum-search__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .forum-search__intro {
+    max-width: 34rem;
+    margin: 0.75rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+
+  .forum-search__source {
+    flex-shrink: 0;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(168, 85, 247, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.74);
+    color: var(--color-faint);
+    font-size: 0.6875rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .forum-search__form {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 30px rgba(31, 17, 40, 0.06);
+    transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), transform 180ms var(--ease-out);
+  }
+
+  .forum-search__form:focus-within {
+    border-color: rgba(168, 85, 247, 0.7);
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.09), 0 12px 36px rgba(87, 31, 127, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .forum-search__search-icon {
+    display: inline-flex;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-left: 0.7rem;
+    color: var(--color-faint);
+    flex-shrink: 0;
+  }
+
+  .forum-search__search-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .forum-search__form input {
+    min-width: 0;
+    flex: 1;
+    padding: 0.55rem 0.35rem;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 0.9375rem;
+  }
+
+  .forum-search__form input::placeholder {
+    color: #aaa1b2;
+  }
+
+  .forum-search__form input::-webkit-search-cancel-button {
+    opacity: 0.45;
+  }
+
+  .forum-search__form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-width: 7rem;
+    padding: 0.72rem 1.15rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: #fff;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 180ms var(--ease-out), transform 180ms var(--ease-out);
+  }
+
+  .forum-search__form button:hover:not(:disabled) {
+    background: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .forum-search__btn-arrow {
+    transition: transform 180ms var(--ease-out);
+  }
+
+  .forum-search__form button:hover .forum-search__btn-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  .forum-search__form button:disabled {
+    cursor: wait;
+  }
+
+  .forum-search__btn-loading {
+    display: none;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .forum-search__btn-loading i {
+    width: 0.28rem;
+    height: 0.28rem;
+    border-radius: 50%;
+    background: currentColor;
+    animation: forum-dot 1s ease-in-out infinite;
+  }
+
+  .forum-search__btn-loading i:nth-child(2) { animation-delay: 0.12s; }
+  .forum-search__btn-loading i:nth-child(3) { animation-delay: 0.24s; }
+
+  .forum-search__form.is-loading .forum-search__btn-label,
+  .forum-search__form.is-loading .forum-search__btn-arrow {
+    display: none;
+  }
+
+  .forum-search__form.is-loading .forum-search__btn-loading {
+    display: inline-flex;
+  }
+
+  @keyframes forum-dot {
+    0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-0.2rem); }
+  }
+
+  .forum-search__status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2rem;
+    margin-top: 0.85rem;
+    padding: 0 0.5rem;
+  }
+
+  .forum-search__status {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+  }
+
+  .forum-search__quota {
+    flex-shrink: 0;
+    color: var(--color-faint);
+    font-size: 0.75rem;
+  }
+
+  .forum-search__results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    opacity: 0;
+    transition: max-height 800ms var(--ease-out), margin-top 400ms var(--ease-out), opacity 300ms ease;
+  }
+
+  .forum-search.has-results .forum-search__results {
+    max-height: 140rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(168, 85, 247, 0.14);
+    opacity: 1;
+  }
+
+  .forum-search__result {
+    min-width: 0;
+    animation: forum-result-in 500ms var(--ease-out) both;
+  }
+
+  .forum-search__result:nth-child(2) { animation-delay: 40ms; }
+  .forum-search__result:nth-child(3) { animation-delay: 80ms; }
+  .forum-search__result:nth-child(4) { animation-delay: 120ms; }
+  .forum-search__result:nth-child(5) { animation-delay: 160ms; }
+  .forum-search__result:nth-child(6) { animation-delay: 200ms; }
+
+  @keyframes forum-result-in {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .forum-search__result-card {
+    position: relative;
+    display: flex;
+    min-height: 16rem;
+    height: 100%;
+    flex-direction: column;
+    padding: 1.25rem;
+    overflow: hidden;
+    border: 1px solid #e9e3ed;
+    border-radius: 1.15rem;
+    background: rgba(255, 255, 255, 0.84);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(49, 26, 63, 0.04);
+    transition:
+      transform 240ms var(--ease-out),
+      border-color 240ms var(--ease-out),
+      box-shadow 240ms var(--ease-out),
+      background 240ms var(--ease-out);
+  }
+
+  .forum-search__result-card::before {
+    position: absolute;
+    right: -2.5rem;
+    bottom: -3rem;
+    width: 7.5rem;
+    height: 7.5rem;
+    content: '';
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 68%);
+    opacity: 0;
+    transition: opacity 240ms var(--ease-out), transform 300ms var(--ease-out);
+  }
+
+  .forum-search__result-card:hover {
+    z-index: 1;
+    border-color: rgba(168, 85, 247, 0.45);
+    background: #ffffff;
+    box-shadow: 0 18px 40px rgba(74, 30, 105, 0.11);
+    transform: translateY(-0.3rem);
+  }
+
+  .forum-search__result-card:hover::before {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  .forum-search__result-top {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .forum-search__source-icon {
+    display: inline-flex;
+    width: 2.25rem;
+    height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #e7d8f2;
+    border-radius: 0.7rem;
+    background: linear-gradient(145deg, #fbf7ff, #f3e8ff);
+    color: #8739c2;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .forum-search__source-wrap {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .forum-search__source-name {
+    overflow: hidden;
+    color: var(--color-ink);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .forum-search__domain {
+    overflow: hidden;
+    margin-top: 0.15rem;
+    color: var(--color-faint);
+    font-size: 0.68rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .forum-search__result-number {
+    align-self: flex-start;
+    color: #c9bed1;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .forum-search__result-title {
+    display: -webkit-box;
+    margin: 1.15rem 0 0;
+    overflow: hidden;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 500;
+    line-height: 1.38;
+    letter-spacing: -0.01em;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    transition: color 180ms var(--ease-out);
+  }
+
+  .forum-search__result-card:hover .forum-search__result-title {
+    color: var(--color-accent);
+  }
+
+  .forum-search__result-snippet {
+    display: -webkit-box;
+    margin: 0.7rem 0 0;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    line-height: 1.65;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .forum-search__result-foot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1.1rem;
+  }
+
+  .forum-search__result-date {
+    color: var(--color-faint);
+    font-size: 0.7rem;
+  }
+
+  .forum-search__result-action {
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .forum-search__result-action i {
+    display: inline-block;
+    margin-left: 0.2rem;
+    font-style: normal;
+    transition: transform 180ms var(--ease-out);
+  }
+
+  .forum-search__result-card:hover .forum-search__result-action i {
+    transform: translate(0.15rem, -0.15rem);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 42rem) {
+    .forum-search__shell {
+      padding: 1.35rem;
+      border-radius: 1.25rem;
+    }
+
+    .forum-search__head {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .forum-search__source {
+      align-self: flex-start;
+    }
+
+    .forum-search__form {
+      margin-top: 1.5rem;
+    }
+
+    .forum-search__form button {
+      min-width: auto;
+      padding-inline: 1rem;
+    }
+
+    .forum-search__btn-label {
+      display: none;
+    }
+
+    .forum-search__status-row {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .forum-search__results {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .forum-search__result-card {
+      min-height: 14.5rem;
+      padding: 1.1rem;
+    }
+
+    .forum-search__result-title {
+      font-size: 1.08rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .forum-search__pulse::after,
+    .forum-search__btn-loading i,
+    .forum-search__result {
+      animation: none;
+    }
+  }
+</style>

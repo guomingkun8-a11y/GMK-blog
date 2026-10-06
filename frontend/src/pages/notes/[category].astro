@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { getCollection } from "astro:content";
+import { noteCategories, type NoteCategory } from "../../data/notes";
+import { resolveNote, displayDate, isoDate, bodyToPlainText, truncate } from "../../lib/resolveNote";
+
+export async function getStaticPaths() {
+  const allNotes = await getCollection("notes");
+  return noteCategories.map((category) => {
+    const entries = allNotes
+      .map((entry) => resolveNote(entry))
+      .filter((r) => r.category.id === category.id)
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+    return {
+      params: { category: category.id },
+      props: { category, entries },
+    };
+  });
+}
+
+interface Props {
+  category: NoteCategory;
+  entries: ReturnType<typeof resolveNote>[];
+}
+
+const { category, entries } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const backHref = `${basePath}/notes`;
+---
+
+<Layout
+  title={`${category.name} | 郭明坤`}
+  description={`${category.name}分类：${category.desc}`}
+>
+  <SiteHeader />
+
+  <main class="journal" id="top">
+    <div class="journal__inner">
+      <header class="journal__hero" data-reveal>
+        <a class="journal__back" href={backHref}>← 返回全部随笔</a>
+        <div class="journal__hero-grid">
+          <div>
+            <p class="journal__eyebrow">{category.eyebrow}</p>
+            <h1 class="journal__title">{category.name}</h1>
+          </div>
+          <div class="journal__intro">
+            <p>{category.intro}</p>
+            <span>{entries.length} 篇记录 · 按时间倒序</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="timeline" aria-label={`${category.name}文章时间线`}>
+        {entries.map((item, index) => (
+          <article class="timeline__entry" data-reveal>
+            <div class="timeline__date">
+              <time datetime={isoDate(item.date)}>{displayDate(item.date)}</time>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+            </div>
+
+            <details class="timeline__content" open={index === 0}>
+              <summary>
+                <div class="timeline__summary-copy">
+                  <div class="timeline__tags">
+                    {item.tags.map((tag) => <span>{tag}</span>)}
+                  </div>
+                  <h2>
+                    <a class="timeline__title-link" href={`${basePath}/notes/${category.id}/${item.slug}`}>{item.title}</a>
+                  </h2>
+                  {item.summary && <p>{item.summary}</p>}
+                </div>
+                <span class="timeline__toggle" aria-hidden="true">
+                  <span class="timeline__toggle-more">展开预览</span>
+                  <span class="timeline__toggle-less">收起预览</span>
+                  <i>＋</i>
+                </span>
+              </summary>
+
+              <div class="timeline__body">
+                <p class="timeline__preview-text">
+                  {truncate(bodyToPlainText(item.entry.body), 100)}
+                </p>
+                <a class="timeline__read-more" href={`${basePath}/notes/${category.id}/${item.slug}`}>
+                  阅读全文 <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </details>
+          </article>
+        ))}
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+</Layout>

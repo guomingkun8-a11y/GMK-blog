@@ -102,3 +102,12 @@ export function formatStars(n: number): string {
   if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
   return String(n);
 }
+
+// 作品卡片配图（Pexels 实拍，按项目主题挑选，存 public/works/）
+// 键 = 仓库名；未命中的仓库走 CSS 渐变占位
+export const WORK_IMAGES: Record<string, string> = {
+  "TB_spider-gmk": "works/tb-spider.jpg",
+  RAW_PHOTO: "works/raw-photo.jpg",
+  "ai-manga-video-reverse-workbench": "works/ai-manga.jpg",
+  BoomStory: "works/boomstory.jpg",
+};

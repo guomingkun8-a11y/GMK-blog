@@ -1,7 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { getGithubData } from "../lib/github";
+import { getGithubData, WORK_IMAGES } from "../lib/github";
+import { noteCategories } from "../data/notes";
 
 // 首页作品区：GitHub 真实仓库，取 star 数最高的 4 个，链接与 GitHub 一致
 const { repos } = await getGithubData();
@@ -10,10 +11,12 @@ const featured = [...repos]
   .slice(0, 4);
 
 const base = import.meta.env.BASE_URL;
-const notesHref = (id: string) => `${base}/notes#${id}`;
+const basePath = base.replace(/\/$/, "");
+const notesHref = (id: string) => `${basePath}/notes/${id}`;
 // 缩略图文字：取仓库名前两段，如 TB_spider-gmk → TB SPIDER
 const thumbText = (name: string) =>
   name.split(/[-_]/).slice(0, 2).join(" ").toUpperCase();
+const workImage = (name: string) => WORK_IMAGES[name] ?? "";
 ---
 
 <Layout>
@@ -33,10 +36,9 @@ const thumbText = (name: string) =>
           这里是我的个人博客👋，记录思考🧠，记录工作✍️，也记录生活✨。
         </p>
         <div class="home__pills" data-reveal>
-          <a class="home__pill" href={notesHref("work")}>工作</a>
-          <a class="home__pill" href={notesHref("study")}>学习</a>
-          <a class="home__pill" href={notesHref("life")}>生活</a>
-          <a class="home__pill" href={notesHref("society")}>社会讨论</a>
+          {noteCategories.map((category) => (
+            <a class="home__pill" href={notesHref(category.id)}>{category.name}</a>
+          ))}
         </div>
       </section>
 
@@ -176,7 +178,12 @@ const thumbText = (name: string) =>
           ) : (
             featured.map((r) => (
               <a class="home__work-card" href={r.html_url} target="_blank" rel="noopener">
-                <div class="home__work-thumb"><span>{thumbText(r.name)}</span></div>
+                <div class:list={["home__work-thumb", { "home__work-thumb--photo": !!workImage(r.name) }]}>
+                  {workImage(r.name) && (
+                    <img src={`${base}/${workImage(r.name)}`} alt={`${r.name} 配图`} loading="lazy" />
+                  )}
+                  <span>{thumbText(r.name)}</span>
+                </div>
                 <div class="home__work-meta">
                   <h3 class="home__work-name">{r.name}</h3>
                   <span class="home__work-tag">

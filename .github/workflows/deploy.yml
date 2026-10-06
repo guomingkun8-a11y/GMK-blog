@@ -22,6 +22,8 @@ jobs:
         uses: actions/checkout@v7
       - name: Build and upload
         uses: withastro/action@v6
+        with:
+          path: frontend
         env:
           # 构建期拉取 GitHub starred 列表用，认证后限额 5000 次/小时（未认证仅 60）
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
