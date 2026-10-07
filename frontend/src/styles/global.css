@@ -70,6 +70,7 @@ a {
 .site-mark {
 	display: inline-flex;
 	align-items: center;
+	white-space: nowrap;
 	color: var(--color-ink);
 	font-family: var(--font-display);
 	font-size: 1.375rem;
@@ -96,6 +97,7 @@ a {
 
 .site-nav__links a {
 	color: var(--color-muted);
+	white-space: nowrap;
 	font-size: 0.8125rem;
 	font-weight: 500;
 	text-decoration: none;
@@ -109,6 +111,7 @@ a {
 .site-nav__cta {
 	display: inline-flex;
 	align-items: center;
+	white-space: nowrap;
 	padding: 0.625rem 1.25rem;
 	border: 1px solid var(--color-ink);
 	border-radius: 999px;
@@ -1024,85 +1027,9 @@ button.home__cta {
 	text-align: center;
 }
 
-/* ===== 响应式 ===== */
-@media (max-width: 42rem) {
-	.site-nav__links {
-		display: none;
-	}
-
-	.home__item-link {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0.75rem;
-	}
-
-	.home__section-head {
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.home__work-grid {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.notes-index__group,
-	.journal__hero-grid {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.notes-index__aside {
-		position: static;
-	}
-
-	.notes-index__preview li {
-		border-bottom: 1px solid var(--color-line);
-	}
-
-	.notes-index__preview-link {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0.55rem;
-	}
-
-	.timeline::before {
-		left: 0.3rem;
-	}
-
-	.timeline__entry {
-		grid-template-columns: minmax(0, 1fr);
-		padding-left: 1.5rem;
-	}
-
-	.timeline__date {
-		min-height: 0;
-		padding: 2rem 0 0;
-	}
-
-	.timeline__date::after {
-		top: 2.3rem;
-		left: -1.5rem;
-		right: auto;
-	}
-
-	.timeline__date span {
-		display: none;
-	}
-
-	.timeline__content {
-		padding-left: 0;
-	}
-
-	.timeline__content summary {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 1.25rem;
-		padding-top: 1rem;
-	}
-
-	.timeline__toggle {
-		justify-self: start;
-	}
-}
 
 /* ===== 滚动进入动画（仅在 JS 可用时隐藏元素） ===== */
-.js [data-reveal] {
+.js.reveal-ready [data-reveal] {
 	opacity: 0;
 	transform: translateY(2.5rem);
 	transition:
@@ -1111,16 +1038,16 @@ button.home__cta {
 	will-change: opacity, transform;
 }
 
-.js [data-reveal].is-visible {
+.js.reveal-ready [data-reveal].is-visible {
 	opacity: 1;
 	transform: translate(0, 0);
 }
 
-.js [data-reveal='left'] {
+.js.reveal-ready [data-reveal='left'] {
 	transform: translateX(-2.5rem);
 }
 
-.js [data-reveal='right'] {
+.js.reveal-ready [data-reveal='right'] {
 	transform: translateX(2.5rem);
 }
 
@@ -2430,5 +2357,132 @@ a.article__nav-item:hover strong {
 	.page__starred-item {
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+}
+
+
+/* ===== 响应式 ===== */
+@media (max-width: 42rem) {
+	/* 导航：小屏不隐藏链接，改放到 header 下方一条可横向滚动的次级导航 */
+	.site-header__inner {
+		flex-wrap: wrap;
+		row-gap: 0.75rem;
+	}
+
+	.site-nav {
+		width: 100%;
+		gap: 1rem;
+	}
+
+	.site-nav__links {
+		display: flex;
+		flex: 1;
+		gap: 1.25rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		padding-bottom: 0.125rem;
+	}
+
+	.site-nav__links::-webkit-scrollbar {
+		display: none;
+	}
+
+	.site-nav__links a {
+		white-space: nowrap;
+	}
+
+	.site-nav__cta {
+		flex-shrink: 0;
+		padding: 0.5rem 1rem;
+	}
+
+	/* 首页：收紧顶部留白，避免手机上一进来空一大块 */
+	.home {
+		padding-top: 8.5rem;
+	}
+
+	.home__title {
+		font-size: clamp(2.5rem, 12vw, 4rem);
+		line-height: 1.06;
+	}
+
+	/* 子页面与随笔页顶部留白同样收紧 */
+	.page {
+		padding-top: 8rem;
+	}
+
+	.journal {
+		padding-top: 7.5rem;
+	}
+
+	.home__item-link {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.75rem;
+	}
+
+	.home__section-head {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.home__work-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.notes-index__group,
+	.journal__hero-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.notes-index__aside {
+		position: static;
+	}
+
+	.notes-index__preview li {
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.notes-index__preview-link {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.55rem;
+	}
+
+	.timeline::before {
+		left: 0.3rem;
+	}
+
+	.timeline__entry {
+		grid-template-columns: minmax(0, 1fr);
+		padding-left: 1.5rem;
+	}
+
+	.timeline__date {
+		min-height: 0;
+		padding: 2rem 0 0;
+	}
+
+	.timeline__date::after {
+		top: 2.3rem;
+		left: -1.5rem;
+		right: auto;
+	}
+
+	.timeline__date span {
+		display: none;
+	}
+
+	.timeline__content {
+		padding-left: 0;
+	}
+
+	.timeline__content summary {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+		padding-top: 1rem;
+	}
+
+	.timeline__toggle {
+		justify-self: start;
 	}
 }

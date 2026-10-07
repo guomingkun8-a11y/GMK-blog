@@ -1,22 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { getGithubData, WORK_IMAGES } from "../lib/github";
 import { noteCategories } from "../data/notes";
 
-// 首页作品区：GitHub 真实仓库，取 star 数最高的 4 个，链接与 GitHub 一致
-const { repos } = await getGithubData();
-const featured = [...repos]
-  .sort((a, b) => b.stargazers_count - a.stargazers_count)
-  .slice(0, 4);
-
+// 首页作品区改为实时：页面加载后由 live-data.js fetch /api/github 填充
 const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, "");
 const notesHref = (id: string) => `${basePath}/notes/${id}`;
-// 缩略图文字：取仓库名前两段，如 TB_spider-gmk → TB SPIDER
-const thumbText = (name: string) =>
-  name.split(/[-_]/).slice(0, 2).join(" ").toUpperCase();
-const workImage = (name: string) => WORK_IMAGES[name] ?? "";
 ---
 
 <Layout>
@@ -110,7 +100,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
                 <article class="obs__card">
                   <div class="obs__card-img">
                     <img
-                      src={`${import.meta.env.BASE_URL}/observations/city.jpg`}
+                      src={`${import.meta.env.BASE_URL}observations/city.jpg`}
                       alt="城市街头的人流"
                       loading="lazy"
                     />
@@ -123,7 +113,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
                 <article class="obs__card">
                   <div class="obs__card-img">
                     <img
-                      src={`${import.meta.env.BASE_URL}/observations/metro.jpg`}
+                      src={`${import.meta.env.BASE_URL}observations/metro.jpg`}
                       alt="地铁通勤的人群"
                       loading="lazy"
                     />
@@ -136,7 +126,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
                 <article class="obs__card">
                   <div class="obs__card-img">
                     <img
-                      src={`${import.meta.env.BASE_URL}/observations/neon.jpg`}
+                      src={`${import.meta.env.BASE_URL}observations/neon.jpg`}
                       alt="深夜的霓虹灯"
                       loading="lazy"
                     />
@@ -149,7 +139,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
                 <article class="obs__card">
                   <div class="obs__card-img">
                     <img
-                      src={`${import.meta.env.BASE_URL}/observations/shop.jpg`}
+                      src={`${import.meta.env.BASE_URL}observations/shop.jpg`}
                       alt="街角的小店"
                       loading="lazy"
                     />
@@ -159,7 +149,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
                     </div>
                   </div>
                 </article>
-                <a class="obs__more" href={`${base}/news`} data-reveal>更多新闻 →</a>
+                <a class="obs__more" href={`${basePath}/news`} data-reveal>更多新闻 →</a>
               </div>
             </div>
           </div>
@@ -172,29 +162,10 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
           <h2 class="home__section-title">一些作品</h2>
           <span class="home__section-index">03 / 05</span>
         </div>
-        <div class="home__work-grid" data-reveal>
-          {featured.length === 0 ? (
-            <p class="page__empty">GitHub 数据暂时拉不到，稍后再试。</p>
-          ) : (
-            featured.map((r) => (
-              <a class="home__work-card" href={r.html_url} target="_blank" rel="noopener">
-                <div class:list={["home__work-thumb", { "home__work-thumb--photo": !!workImage(r.name) }]}>
-                  {workImage(r.name) && (
-                    <img src={`${base}/${workImage(r.name)}`} alt={`${r.name} 配图`} loading="lazy" />
-                  )}
-                  <span>{thumbText(r.name)}</span>
-                </div>
-                <div class="home__work-meta">
-                  <h3 class="home__work-name">{r.name}</h3>
-                  <span class="home__work-tag">
-                    {r.language ? `${r.language} · ` : ""}★ {r.stargazers_count}
-                  </span>
-                </div>
-              </a>
-            ))
-          )}
+        <div class="home__work-grid" data-live="github-featured" data-reveal>
+          <p class="page__empty">正在加载 GitHub 项目…</p>
         </div>
-        <a class="home__more" href={`${base}/works`}>更多作品 →</a>
+        <a class="home__more" href={`${basePath}/works`}>更多作品 →</a>
       </section>
 
       <!-- 来聊 -->
@@ -387,6 +358,7 @@ const workImage = (name: string) => WORK_IMAGES[name] ?? "";
     </div>
   </footer>
 
-  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
-  <script is:inline src={`${import.meta.env.BASE_URL}/obs-scroll.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}chat.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}obs-scroll.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}live-data.js`}></script>
 </Layout>

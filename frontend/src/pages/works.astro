@@ -1,18 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { getGithubData, formatStars, WORK_IMAGES, type Repo } from "../lib/github";
 
-// ===== 构建时抓取 GitHub 数据（服务端执行，不耗访客配额）=====
-const GITHUB_USER = "guomingkun8-a11y";
-const { repos, starred } = await getGithubData();
-const base = import.meta.env.BASE_URL;
-const workImage = (name: string) => WORK_IMAGES[name] ?? "";
-
-// 全部 star 项目：排除自己的仓库，按 star 数降序（不做精选截断，分页展示）
-const starredAll = starred
-  .filter((r) => r.full_name.split("/")[0] !== GITHUB_USER)
-  .sort((a, b) => b.stargazers_count - a.stargazers_count);
+// 作品改为实时：页面加载后由 live-data.js fetch /api/github 填充（含分页）
 ---
 
 <Layout title="作品 | 郭明坤" description="郭明坤的作品——自己的开源项目，以及他 star 过的优质项目。">
@@ -35,31 +25,10 @@ const starredAll = starred
       <section class="page__section">
         <div class="page__section-head" data-reveal>
           <h2 class="page__h2">我的项目</h2>
-          <span class="page__count">{repos.length} 个仓库</span>
+          <span class="page__count" data-live-count="repos">加载中…</span>
         </div>
-        <div class="page__works" data-pager="4" data-reveal>
-          {repos.length === 0 ? (
-            <p class="page__empty">GitHub 数据暂时拉不到，稍后再试。</p>
-          ) : (
-            repos.map((r) => (
-              <a class="page__work-card" href={r.html_url} target="_blank" rel="noopener">
-                <div class:list={["page__work-thumb", { "page__work-thumb--photo": !!workImage(r.name) }]}>
-                  {workImage(r.name) && (
-                    <img src={`${base}/${workImage(r.name)}`} alt={`${r.name} 配图`} loading="lazy" />
-                  )}
-                  <span>{r.name.replace(/[-_]/g, " ").slice(0, 14).toUpperCase()}</span>
-                </div>
-                <div class="page__work-meta">
-                  <h3 class="page__work-name">{r.name}</h3>
-                  <div class="page__work-tags">
-                    {r.language && <span class="page__work-tag">{r.language}</span>}
-                    <span class="page__work-tag page__work-star">★ {r.stargazers_count}</span>
-                  </div>
-                  <p class="page__work-desc">{r.description || "暂无描述"}</p>
-                </div>
-              </a>
-            ))
-          )}
+        <div class="page__works" data-pager="4" data-live="github-repos" data-reveal>
+          <p class="page__empty">正在加载 GitHub 项目…</p>
         </div>
         <nav class="page__pager" data-pager-nav hidden aria-label="项目分页">
           <button class="page__pager-btn" type="button" data-pager-prev aria-label="上一页">←</button>
@@ -72,25 +41,10 @@ const starredAll = starred
       <section class="page__body">
         <div class="page__section-head" data-reveal>
           <h2 class="page__h2">我 star 的项目</h2>
-          <span class="page__count">全部 {starredAll.length} 个</span>
+          <span class="page__count" data-live-count="starred">加载中…</span>
         </div>
-        <ul class="page__starred" data-pager="5" data-reveal>
-          {starredAll.length === 0 ? (
-            <li class="page__empty">star 项目拉取失败，稍后再试。</li>
-          ) : (
-            starredAll.map((r) => (
-              <li class="page__starred-item">
-                <a href={r.html_url} target="_blank" rel="noopener">
-                  <span class="page__starred-name">{r.full_name}</span>
-                  <span class="page__starred-desc">{r.description || "暂无描述"}</span>
-                </a>
-                <span class="page__starred-meta">
-                  {r.language && <span class="page__starred-lang">{r.language}</span>}
-                  <span class="page__starred-star">★ {formatStars(r.stargazers_count)}</span>
-                </span>
-              </li>
-            ))
-          )}
+        <ul class="page__starred" data-pager="5" data-live="github-starred" data-reveal>
+          <li class="page__empty">正在加载 star 项目…</li>
         </ul>
         <nav class="page__pager" data-pager-nav hidden aria-label="star 项目分页">
           <button class="page__pager-btn" type="button" data-pager-prev aria-label="上一页">←</button>
@@ -108,6 +62,7 @@ const starredAll = starred
     </div>
   </footer>
 
-  <script is:inline src={`${import.meta.env.BASE_URL}/chat.js`}></script>
-  <script is:inline src={`${import.meta.env.BASE_URL}/works-pager.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}chat.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}works-pager.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}live-data.js`}></script>
 </Layout>

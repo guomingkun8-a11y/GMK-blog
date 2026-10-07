@@ -6,6 +6,7 @@
 	function initPager() {
 		const grids = document.querySelectorAll('[data-pager]');
 		grids.forEach(function (grid) {
+			// 数据可能被 live-data.js 动态替换，重复初始化时先重置分页栏状态
 			var perPage = parseInt(grid.getAttribute('data-pager'), 10) || 4;
 			var cards = Array.prototype.slice.call(grid.children);
 			var totalPages = Math.ceil(cards.length / perPage);
@@ -18,6 +19,10 @@
 			var numbers = pager.querySelector('[data-pager-numbers]');
 			var info = pager.querySelector('[data-pager-info]');
 			var current = 0;
+
+			// 用 dataset 标记已初始化的 grid，避免重复绑定监听器
+			if (grid.dataset.pagerReady === '1') return;
+			grid.dataset.pagerReady = '1';
 
 			function scrollToGrid() {
 				var rect = grid.getBoundingClientRect();
@@ -98,4 +103,7 @@
 	} else {
 		initPager();
 	}
+
+	// 暴露给实时数据脚本：动态填充作品数据后重新初始化分页
+	window.__GMK_PAGER__ = initPager;
 })();

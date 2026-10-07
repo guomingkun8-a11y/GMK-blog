@@ -2,6 +2,7 @@
 function initReveal() {
 	const els = document.querySelectorAll('[data-reveal]');
 	if (!els.length) return;
+	document.documentElement.classList.add('reveal-ready');
 
 	if (!('IntersectionObserver' in window)) {
 		els.forEach((el) => el.classList.add('is-visible'));
@@ -23,3 +24,10 @@ function initReveal() {
 
 document.addEventListener('astro:page-load', initReveal);
 initReveal();
+
+// 暴露给实时数据脚本：动态插入内容后重新观察新增的 [data-reveal] 元素
+window.__GMK_REVEAL__ = function (node) {
+	if (node && node.classList) {
+		node.classList.add('is-visible');
+	}
+};

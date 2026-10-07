@@ -23,13 +23,14 @@ const {
     <link
       rel="icon"
       type="image/svg+xml"
-      href={`${import.meta.env.BASE_URL}/favicon.svg`}
+      href={`${import.meta.env.BASE_URL}favicon.svg`}
     />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <script is:inline defer src={`${import.meta.env.BASE_URL}/header-scroll.js`}></script>
+    <script is:inline set:html={`window.__GMK_BASE__ = ${JSON.stringify(import.meta.env.BASE_URL)};`}></script>
+    <script is:inline defer src={`${import.meta.env.BASE_URL}header-scroll.js`}></script>
     <script is:inline set:html={`window.__GMK_AI__ = {
       apiKey: ${JSON.stringify(import.meta.env.PUBLIC_AI_API_KEY ?? '')},
       baseUrl: ${JSON.stringify(import.meta.env.PUBLIC_AI_BASE_URL ?? 'https://openrouter.ai/api/v1')},
@@ -48,6 +49,6 @@ const {
   </head>
   <body>
     <slot />
-    <script is:inline src={`${import.meta.env.BASE_URL}/reveal.js`}></script>
+    <script is:inline src={`${import.meta.env.BASE_URL}reveal.js`}></script>
   </body>
 </html>

@@ -16,7 +16,7 @@ export const noteCategories: NoteCategory[] = [
     id: "work",
     name: "工作",
     eyebrow: "Work Journal",
-    desc: "项目复盘、技术笔记、踩坑记录——从财务、电商到 AI 开发，这一路做过的事。",
+    desc: "项目复盘、技术笔记、遇到问题踩过的坑",
     intro: "工作不是简历上的几行字，而是每次落地、返工和重新判断之后留下的经验。",
   },
   {
