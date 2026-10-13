@@ -340,6 +340,27 @@ async def chat(payload_request: ChatRequest, request: Request) -> dict[str, str]
     return {"reply": reply or "模型暂时没有返回内容。"}
 
 
+@app.exception_handler(HTTPException)
+async def chat_error_fallback(request: Request, exc: HTTPException):
+    if request.url.path != "/api/chat" or exc.status_code not in {502, 503}:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+    return _chat_fallback_response(request)
+
+
+def _chat_fallback_response(request: Request):
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "reply": "AI 模型现在有点忙。你可以稍后再试，或直接联系郭明坤：guomingkun8@gmail.com。"
+        },
+    )
+
+
 @app.get("/api/news")
 async def news_data() -> dict[str, Any]:
     now = time.monotonic()
