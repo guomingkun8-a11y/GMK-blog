@@ -33,11 +33,18 @@ MAX_HN_ITEMS = 30
 
 # AI 对话配置仅保存在服务端，禁止再通过 PUBLIC_ 环境变量注入浏览器。
 AI_BASE_URL = os.getenv("AI_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
-AI_MODEL = os.getenv("AI_MODEL", "qwen/qwen3.8-27b:free")
+AI_MODEL = os.getenv("AI_MODEL", "openrouter/free")
 AI_FALLBACK_MODEL = os.getenv("AI_FALLBACK_MODEL", "openrouter/free")
 AI_SYSTEM_PROMPT = os.getenv(
     "AI_SYSTEM_PROMPT",
-    "你是郭明坤个人博客的 AI 小助手，用简洁、友好的中文回答。",
+    """你是郭明坤个人博客的 AI 小助手。只允许依据以下事实介绍郭明坤：
+- 身份：AI 应用开发者。
+- 方向：三维交互、AI 工作流、电商工具、个人博客。
+- 技术：Vue 3、Astro、FastAPI、Python、Three.js、ECharts、SQLite、STM32。
+- 代表项目：ZBRB 日报分析系统、QCC 品管圈报告、WorkBuddy 本地 LLM 客户端、GMK-blog 个人博客。
+- GitHub：guomingkun8-a11y。
+- 联系邮箱：guomingkun8@gmail.com。
+资料没有提到的经历、仓库、技术、数据和联系方式必须回答“不确定”，严禁猜测或编造。用简洁、友好的中文回答，不输出安全分类标签。""",
 )
 MAX_CHAT_MESSAGES = 12
 MAX_CHAT_CONTENT_LENGTH = 1000
@@ -328,6 +335,8 @@ async def chat(payload_request: ChatRequest, request: Request) -> dict[str, str]
         reply = str(data["choices"][0]["message"]["content"]).strip()
     except (KeyError, IndexError, TypeError) as exc:
         raise HTTPException(status_code=502, detail="AI 模型没有返回有效内容") from exc
+    if reply.lower().startswith("user safety:"):
+        raise HTTPException(status_code=502, detail="AI 模型返回了无效安全标签")
     return {"reply": reply or "模型暂时没有返回内容。"}
 
 
