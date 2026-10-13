@@ -15,7 +15,7 @@ const pageHref = (path = '') => `${basePath}/${path}`;
 				<li><a href={pageHref('about')}>关于</a></li>
 				<li><a href={pageHref('contact')}>联系</a></li>
 			</ul>
-			<button class="site-nav__cta" type="button" data-chat-open>与我聊聊</button>
+			<a class="site-nav__cta" href={pageHref('chat')}>与我聊聊</a>
 		</nav>
 	</div>
 </header>

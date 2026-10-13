@@ -44,8 +44,9 @@ backend/**/__pycache__/
 # 大文件：PDF 资料库（3.1GB，不放 GitHub，走对象存储/CDN）
 frontend/public/docs/
 
-# 本地工作记录（AI 助手的工作笔记，不入库）
+# 本地工作记录与交付预览（不入库）
 .workbuddy/
+outputs/
 
 # 旧的未压缩 starry_night 原文件（本地保留，项目只用 optimized 压缩版）
 frontend/public/models/starry_night_diorama_tilt_brush.glb

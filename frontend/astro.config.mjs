@@ -12,7 +12,8 @@ const serverSite = process.env.DEPLOY_SITE || 'http://121.40.193.80';
 // https://astro.build/config
 export default defineConfig({
   site: isServerDeploy ? serverSite : 'https://guomingkun8-a11y.github.io',
-  base: isServerDeploy ? '/' : '/GMK-blog',
+  // 始终保留尾部斜杠，避免 `${BASE_URL}asset.js` 拼成 /GMK-blogasset.js
+  base: isServerDeploy ? '/' : '/GMK-blog/',
   vite: {
     css: {
       // 明确用 postcss/esbuild 管线，避免 lightningcss 把 @media (max-width:…)
@@ -31,6 +32,11 @@ export default defineConfig({
         '/api': {
           target: 'http://127.0.0.1:8000',
           changeOrigin: true,
+        },
+        '/GMK-blog/api': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/GMK-blog/, ''),
         },
       },
     },

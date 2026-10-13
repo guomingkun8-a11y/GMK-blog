@@ -31,14 +31,6 @@ const {
     <script is:inline>document.documentElement.classList.add('js');</script>
     <script is:inline set:html={`window.__GMK_BASE__ = ${JSON.stringify(import.meta.env.BASE_URL)};`}></script>
     <script is:inline defer src={`${import.meta.env.BASE_URL}header-scroll.js`}></script>
-    <script is:inline set:html={`window.__GMK_AI__ = {
-      apiKey: ${JSON.stringify(import.meta.env.PUBLIC_AI_API_KEY ?? '')},
-      baseUrl: ${JSON.stringify(import.meta.env.PUBLIC_AI_BASE_URL ?? 'https://openrouter.ai/api/v1')},
-      model: ${JSON.stringify(import.meta.env.PUBLIC_AI_MODEL ?? 'qwen/qwen3.8-27b:free')},
-      fallbackModel: ${JSON.stringify(import.meta.env.PUBLIC_AI_FALLBACK_MODEL ?? 'openrouter/free')},
-      siteName: ${JSON.stringify(import.meta.env.PUBLIC_AI_SITE_NAME ?? '')},
-      systemPrompt: ${JSON.stringify(import.meta.env.PUBLIC_AI_SYSTEM_PROMPT ?? '')},
-    };`}></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -49,6 +41,8 @@ const {
   </head>
   <body>
     <slot />
-    <script is:inline src={`${import.meta.env.BASE_URL}reveal.js`}></script>
+    {!Astro.url.pathname.replace(/\/$/, "").endsWith("/chat") && (
+      <script is:inline src={`${import.meta.env.BASE_URL}reveal.js`} />
+    )}
   </body>
 </html>

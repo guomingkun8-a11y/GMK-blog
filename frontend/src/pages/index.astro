@@ -182,33 +182,40 @@ const notesHref = (id: string) => `${basePath}/notes/${id}`;
             <strong>24 小时在线。</strong
             >它有点贫嘴但很靠谱，常见问题都难不倒它。
           </p>
-          <button class="home__cta" type="button" data-chat-open data-reveal
-            >说声 hi →</button
-          >
+          <a class="home__cta" href={`${basePath}/chat`} data-reveal>说声 hi →</a>
         </div>
       </section>
 
       <!-- 关于 -->
-      <section class="home__section" id="about">
+      <section class="home__section home__about" id="about">
         <div class="home__section-head" data-reveal>
           <h2 class="home__section-title">关于我</h2>
           <span class="home__section-index">04 / 05</span>
         </div>
-        <ul class="home__list">
-          <li class="home__item" data-reveal>
-            <h3 class="home__item-label">一条不设限的路径</h3>
-            <p class="home__item-desc">
-              保存思考、保存学习
-            </p>
-          </li>
-          <li class="home__item" data-reveal>
-            <h3 class="home__item-label">技术与审美并重</h3>
-            <p class="home__item-desc">
-              熟悉可灵、即梦、Runway 等 AI
-              视频工具，偏好图生视频工作流；前端、后端、物联网都能上手，追求克制而高级的视觉表达。
-            </p>
-          </li>
-        </ul>
+        <div class="home__about-grid">
+          <article class="home__about-item" data-reveal>
+            <div class="home__about-meta">
+              <span class="home__about-number">01</span>
+              <span class="home__about-kicker">成长路径</span>
+            </div>
+            <div class="home__about-content">
+              <h3>一条不设限的路径</h3>
+              <p>保存思考，也保存一路学过的东西。</p>
+            </div>
+          </article>
+          <article class="home__about-item" data-reveal>
+            <div class="home__about-meta">
+              <span class="home__about-number">02</span>
+              <span class="home__about-kicker">实践方式</span>
+            </div>
+            <div class="home__about-content">
+              <h3>技术与审美并重</h3>
+              <p>
+                熟悉可灵、即梦、Runway 等 AI 视频工具，偏好图生视频工作流；前端、后端、物联网都能上手，追求克制而高级的视觉表达。
+              </p>
+            </div>
+          </article>
+        </div>
       </section>
 
       <!-- 联系 -->
@@ -317,40 +324,6 @@ const notesHref = (id: string) => `${basePath}/notes/${id}`;
     </div>
   </main>
 
-  <!-- 聊天挂件（后期把 data-endpoint 指向大模型接口即可启用真对话） -->
-  <div class="chat-window" id="gmk-chat" data-endpoint="" hidden>
-    <div class="chat__head">
-      <span class="chat__avatar" aria-hidden="true">GMK</span>
-      <div class="chat__head-info">
-        <span class="chat__head-name">郭明坤的 AI 分身</span>
-        <span class="chat__head-status">在线 · 随便聊聊</span>
-      </div>
-      <button
-        class="chat__close"
-        type="button"
-        data-chat-close
-        aria-label="关闭聊天">×</button
-      >
-    </div>
-    <div class="chat__messages" aria-live="polite">
-      <div class="chat__msg chat__msg--bot">
-        哈喽，我是郭明坤的 AI 分身 🤖
-        技术问题、合作想法、还是单纯想唠两句——都可以说，我尽量不犯懒。
-      </div>
-    </div>
-    <form class="chat__input">
-      <input
-        class="chat__field"
-        type="text"
-        placeholder="输入消息…"
-        autocomplete="off"
-        maxlength="500"
-      />
-      <button class="chat__send" type="submit" aria-label="发送">➤</button>
-    </form>
-    <div class="chat__foot">内容由 AI 生成，仅供参考</div>
-  </div>
-
   <footer class="site-footer">
     <div class="site-footer__inner">
       <p>© {new Date().getFullYear()} 郭明坤</p>
@@ -358,7 +331,6 @@ const notesHref = (id: string) => `${basePath}/notes/${id}`;
     </div>
   </footer>
 
-  <script is:inline src={`${import.meta.env.BASE_URL}chat.js`}></script>
   <script is:inline src={`${import.meta.env.BASE_URL}obs-scroll.js`}></script>
   <script is:inline src={`${import.meta.env.BASE_URL}live-data.js`}></script>
 </Layout>

@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const homeHref = `${basePath}/`;
+---
+
+<Layout
+  title="AI 对话 | 郭明坤"
+  description="和郭明坤的 AI 分身聊聊技术、项目、合作想法和博客内容。"
+>
+  <main class="ai-chat" id="top">
+    <header class="ai-chat__topbar">
+      <a class="ai-chat__brand" href={homeHref} aria-label="返回郭明坤的博客首页">
+        <span class="ai-chat__brand-mark" aria-hidden="true">GMK</span>
+        <span class="ai-chat__brand-copy">
+          <strong>郭明坤的 AI 分身</strong>
+          <small><i aria-hidden="true"></i>在线 · 随便聊聊</small>
+        </span>
+      </a>
+      <a class="ai-chat__back" href={homeHref}>返回博客</a>
+    </header>
+
+    <section class="ai-chat__stage" aria-label="AI 对话">
+      <div class="ai-chat__messages" aria-live="polite" aria-label="对话消息">
+        <div class="ai-chat__welcome">
+          <p class="ai-chat__eyebrow">AI 分身</p>
+          <h1>想聊点什么？</h1>
+          <p>
+            技术问题、项目想法、合作交流，或者看完博客想说两句，都可以直接问。
+          </p>
+          <div class="ai-chat__suggestions" aria-label="推荐问题">
+            <button type="button" data-chat-suggestion="介绍一下郭明坤做过的项目">他做过哪些项目？</button>
+            <button type="button" data-chat-suggestion="郭明坤目前在研究哪些 AI 方向？">最近在研究什么？</button>
+            <button type="button" data-chat-suggestion="我想和郭明坤聊合作，应该怎么联系？">聊聊合作</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ai-chat__composer-wrap">
+      <form class="ai-chat__composer" data-chat-form>
+        <textarea
+          class="ai-chat__field"
+          data-chat-field
+          rows="1"
+          placeholder="给郭明坤的 AI 分身发消息…"
+          autocomplete="off"
+          maxlength="1000"
+          aria-label="输入消息"
+        ></textarea>
+        <button class="ai-chat__send" data-chat-send type="submit" aria-label="发送消息">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 19V5M6.5 10.5 12 5l5.5 5.5" />
+          </svg>
+        </button>
+      </form>
+      <p class="ai-chat__notice">AI 可能会犯错，重要信息请通过邮箱与本人确认。</p>
+    </div>
+  </main>
+
+  <script is:inline src={`${import.meta.env.BASE_URL}chat-page.js`}></script>
+</Layout>

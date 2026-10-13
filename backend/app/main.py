@@ -6,12 +6,13 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 load_dotenv()
@@ -29,6 +30,29 @@ HN_ALGOLIA = "https://hn.algolia.com/api/v1/search"
 # 实时数据缓存 TTL（秒），默认 3 小时；可用 CACHE_TTL_SECONDS 覆盖
 DATA_TTL_DEFAULT = 3 * 60 * 60
 MAX_HN_ITEMS = 30
+
+# AI 对话配置仅保存在服务端，禁止再通过 PUBLIC_ 环境变量注入浏览器。
+AI_BASE_URL = os.getenv("AI_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+AI_MODEL = os.getenv("AI_MODEL", "qwen/qwen3.8-27b:free")
+AI_FALLBACK_MODEL = os.getenv("AI_FALLBACK_MODEL", "openrouter/free")
+AI_SYSTEM_PROMPT = os.getenv(
+    "AI_SYSTEM_PROMPT",
+    "你是郭明坤个人博客的 AI 小助手，用简洁、友好的中文回答。",
+)
+MAX_CHAT_MESSAGES = 12
+MAX_CHAT_CONTENT_LENGTH = 1000
+CHAT_RATE_LIMIT = 20
+CHAT_RATE_WINDOW = 60 * 60
+_chat_requests: dict[str, list[float]] = {}
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=MAX_CHAT_CONTENT_LENGTH)
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
 
 
 @dataclass
@@ -58,7 +82,7 @@ app.add_middleware(
     allow_origins=_origins(),
     allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -235,6 +259,76 @@ async def github_data() -> dict[str, Any]:
 
     _live_cache["github"] = CacheEntry(expires_at=now + _live_ttl(), value=data)
     return data
+
+
+@app.post("/api/chat")
+async def chat(payload_request: ChatRequest, request: Request) -> dict[str, str]:
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.monotonic()
+    recent = [
+        requested_at
+        for requested_at in _chat_requests.get(client_ip, [])
+        if now - requested_at < CHAT_RATE_WINDOW
+    ]
+    if len(recent) >= CHAT_RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
+    recent.append(now)
+    _chat_requests[client_ip] = recent
+
+    api_key = os.getenv("AI_API_KEY", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="服务端尚未配置 AI_API_KEY")
+
+    conversation = [
+        {"role": item.role, "content": " ".join(item.content.split())}
+        for item in payload_request.messages
+        if item.content.strip()
+    ]
+    if not conversation or conversation[-1]["role"] != "user":
+        raise HTTPException(status_code=400, detail="最后一条消息必须来自用户")
+
+    payload = {
+        "model": AI_MODEL,
+        "messages": [
+            {"role": "system", "content": AI_SYSTEM_PROMPT},
+            *conversation,
+        ],
+        "max_tokens": 800,
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    }
+    site_name = os.getenv("AI_SITE_NAME", "").strip()
+    if site_name and site_name.isascii():
+        headers["X-Title"] = site_name
+
+    try:
+        async with httpx.AsyncClient(timeout=45) as client:
+            response = await client.post(
+                f"{AI_BASE_URL}/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            if not response.is_success and AI_MODEL != AI_FALLBACK_MODEL:
+                payload["model"] = AI_FALLBACK_MODEL
+                response = await client.post(
+                    f"{AI_BASE_URL}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                )
+            response.raise_for_status()
+            data = response.json()
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(status_code=502, detail="AI 模型暂时不可用") from exc
+    except (httpx.HTTPError, ValueError) as exc:
+        raise HTTPException(status_code=502, detail="AI 服务连接失败") from exc
+
+    try:
+        reply = str(data["choices"][0]["message"]["content"]).strip()
+    except (KeyError, IndexError, TypeError) as exc:
+        raise HTTPException(status_code=502, detail="AI 模型没有返回有效内容") from exc
+    return {"reply": reply or "模型暂时没有返回内容。"}
 
 
 @app.get("/api/news")

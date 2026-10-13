@@ -32,18 +32,19 @@ cd "$ROOT/frontend"
 DEPLOY_TARGET=server DEPLOY_SITE="http://$HOST" npm run build
 
 # ---------- 2. 上传前端 ----------
+# 先解压到临时目录，验证成功后再原子切换，避免上传过程中网站缺文件。
 echo ""
 echo "[2/4] 上传前端到 /var/www/gmk-blog ..."
 tar -C "$ROOT/frontend/dist" -cf - . | $SSH \
-  'find /var/www/gmk-blog -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + && tar -C /var/www/gmk-blog -xf - && chown -R www-data:www-data /var/www/gmk-blog && echo "  前端文件数: $(find /var/www/gmk-blog -type f | wc -l)"'
+  'set -e; rm -rf /var/www/gmk-blog.new; mkdir -p /var/www/gmk-blog.new; tar -C /var/www/gmk-blog.new -xf -; test -s /var/www/gmk-blog.new/index.html; chown -R www-data:www-data /var/www/gmk-blog.new; rm -rf /var/www/gmk-blog.old; mv /var/www/gmk-blog /var/www/gmk-blog.old; mv /var/www/gmk-blog.new /var/www/gmk-blog; rm -rf /var/www/gmk-blog.old; echo "  前端文件数: $(find /var/www/gmk-blog -type f | wc -l)"'
 
 # ---------- 3. 上传后端（可选） ----------
 if [ "$UPDATE_API" = "1" ]; then
   echo ""
   echo "[3/4] 上传后端到 /opt/gmk-blog-api ..."
-  tar --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' \
+  tar --exclude='.env' --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' \
     -C "$ROOT/backend" -cf - . | $SSH \
-    'tar -C /opt/gmk-blog-api -xf - && chown -R www-data:www-data /opt/gmk-blog-api && chmod 600 /opt/gmk-blog-api/.env && echo "  后端已更新"'
+    'tar -C /opt/gmk-blog-api -xf - && chown -R www-data:www-data /opt/gmk-blog-api && chmod 600 /opt/gmk-blog-api/.env && echo "  后端已更新（服务器 .env 已保留）"'
 
   echo ""
   echo "[3.5/4] 重启后端服务 ..."
