@@ -168,12 +168,12 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     position: relative;
     overflow: hidden;
     padding: clamp(1.5rem, 4vw, 3rem);
-    border: 1px solid #e9e2ef;
+    border: 1px solid var(--color-line);
     border-radius: clamp(1.25rem, 3vw, 2rem);
     background:
-      radial-gradient(circle at 90% 0%, rgba(168, 85, 247, 0.13), transparent 36%),
-      linear-gradient(145deg, #ffffff 0%, #fdfaff 100%);
-    box-shadow: 0 24px 70px rgba(70, 24, 104, 0.08);
+      radial-gradient(circle at 90% 0%, rgba(0, 0, 0, 0.04), transparent 36%),
+      linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.06);
   }
 
   .forum-search__shell::before {
@@ -183,7 +183,7 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     width: 15rem;
     height: 15rem;
     content: '';
-    border: 1px solid rgba(168, 85, 247, 0.18);
+    border: 1px solid var(--color-line);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -220,7 +220,7 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     position: absolute;
     inset: -0.3rem;
     content: '';
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    border: 1px solid var(--color-faint);
     border-radius: 50%;
     animation: forum-pulse 2s ease-out infinite;
   }
@@ -249,7 +249,7 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
   .forum-search__source {
     flex-shrink: 0;
     padding: 0.4rem 0.75rem;
-    border: 1px solid rgba(168, 85, 247, 0.18);
+    border: 1px solid var(--color-line);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.74);
     color: var(--color-faint);
@@ -273,8 +273,8 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
   }
 
   .forum-search__form:focus-within {
-    border-color: rgba(168, 85, 247, 0.7);
-    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.09), 0 12px 36px rgba(87, 31, 127, 0.1);
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05), 0 12px 36px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px);
   }
 
@@ -417,7 +417,7 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     max-height: 140rem;
     margin-top: 1.25rem;
     padding-top: 1.25rem;
-    border-top: 1px solid rgba(168, 85, 247, 0.14);
+    border-top: 1px solid var(--color-line);
     opacity: 1;
   }
 
@@ -445,12 +445,12 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     flex-direction: column;
     padding: 1.25rem;
     overflow: hidden;
-    border: 1px solid #e9e3ed;
+    border: 1px solid var(--color-line);
     border-radius: 1.15rem;
     background: rgba(255, 255, 255, 0.84);
     color: inherit;
     text-decoration: none;
-    box-shadow: 0 8px 24px rgba(49, 26, 63, 0.04);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
     transition:
       transform 240ms var(--ease-out),
       border-color 240ms var(--ease-out),
@@ -466,16 +466,16 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     height: 7.5rem;
     content: '';
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 68%);
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.06), transparent 68%);
     opacity: 0;
     transition: opacity 240ms var(--ease-out), transform 300ms var(--ease-out);
   }
 
   .forum-search__result-card:hover {
     z-index: 1;
-    border-color: rgba(168, 85, 247, 0.45);
+    border-color: var(--color-ink);
     background: #ffffff;
-    box-shadow: 0 18px 40px rgba(74, 30, 105, 0.11);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
     transform: translateY(-0.3rem);
   }
 
@@ -497,10 +497,10 @@ const apiBase = (import.meta.env.PUBLIC_FORUMS_API_URL || "").replace(/\/$/, "")
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid #e7d8f2;
+    border: 1px solid var(--color-line);
     border-radius: 0.7rem;
-    background: linear-gradient(145deg, #fbf7ff, #f3e8ff);
-    color: #8739c2;
+    background: linear-gradient(145deg, #fafafa, #f4f4f5);
+    color: var(--color-ink);
     font-family: var(--font-display);
     font-size: 0.95rem;
     font-weight: 600;
