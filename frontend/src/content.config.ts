@@ -13,6 +13,7 @@ const notes = defineCollection({
     category: z.enum(['work', 'study', 'life', 'society']).optional(),
     date: z.coerce.date().optional(),
     tags: z.array(z.string()).optional(),
+    cover: z.string().optional(),
   }),
 });
 

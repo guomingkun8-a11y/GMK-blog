@@ -35,6 +35,7 @@ export interface ResolvedNote {
   summary: string;
   date: Date;
   tags: string[];
+  cover?: string;
 }
 
 // 把一条 raw entry 解析成完整展示字段（带各种兜底）
@@ -60,7 +61,7 @@ export function resolveNote(entry: NoteEntry): ResolvedNote {
 
   const tags = entry.data.tags ?? [];
 
-  return { entry, category, slug, title, summary, date, tags };
+  return { entry, category, slug, title, summary, date, tags, cover: entry.data.cover };
 }
 
 // 正文转纯文本（剥离 Markdown 标记）

@@ -11,12 +11,16 @@ function initHeaderScroll() {
 		if (y <= 80) {
 			// 接近顶部时始终显示
 			header.classList.remove('is-hidden');
+			header.classList.remove('is-scrolled');
 		} else if (y > lastY + 4) {
 			// 向下滚（留 4px 死区防抖动）
 			header.classList.add('is-hidden');
 		} else if (y < lastY - 4) {
 			// 向上滚
 			header.classList.remove('is-hidden');
+		}
+		if (y > 80) {
+			header.classList.add('is-scrolled');
 		}
 		lastY = y;
 		ticking = false;
