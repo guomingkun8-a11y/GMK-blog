@@ -28,3 +28,7 @@ npm run build
 后端说明见 [backend/README.md](backend/README.md)。
 
 博客地址：<https://guomingkun8-a11y.github.io/GMK-blog/>
+
+## 背景音乐
+
+把音频文件放到 `frontend/public/music/`（支持 mp3、m4a、aac、wav、ogg、opus、flac、webm）。构建时会按文件名排序生成歌单，播放完最后一首后从第一首继续。新增或删除音乐后重新构建并部署；无需在网页上选择文件。浏览器可能限制有声自动播放，此时点击页眉姓名旁的唱片即可播放。

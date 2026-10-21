@@ -1,11 +1,16 @@
 ---
+import MusicPlayer from "./MusicPlayer.astro";
+
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pageHref = (path = '') => `${basePath}/${path}`;
 ---
 
 <header class="site-header">
 	<div class="site-header__inner">
-		<a class="site-mark" href={pageHref()} aria-label="郭明坤首页">郭明坤</a>
+		<div class="site-header__brand">
+			<a class="site-mark" href={pageHref()} aria-label="郭明坤首页">郭明坤</a>
+			<MusicPlayer />
+		</div>
 
 		<nav class="site-nav" aria-label="主导航">
 			<ul class="site-nav__links">

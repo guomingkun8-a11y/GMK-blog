@@ -1,0 +1,28 @@
+---
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const musicDir = join(process.cwd(), "public", "music");
+const tracks = readdirSync(musicDir, { withFileTypes: true })
+  .filter((file) => file.isFile() && /\.(mp3|m4a|aac|wav|ogg|opus|flac|webm)$/i.test(file.name))
+  .map((file) => file.name)
+  .sort((a, b) => a.localeCompare(b, "zh-CN", { numeric: true }));
+---
+
+<button
+  class="gmk-music"
+  id="gmk-music"
+  type="button"
+  aria-pressed="false"
+  aria-label={tracks.length ? "播放音乐" : "暂无音乐"}
+  title={tracks.length ? "播放音乐" : "暂无音乐"}
+  data-tracks={JSON.stringify(tracks)}
+  disabled={!tracks.length}
+>
+  <span class="gmk-music__disc" aria-hidden="true"></span>
+  <span class="gmk-music__arm" aria-hidden="true"></span>
+  <span class="gmk-music__note gmk-music__note--one" aria-hidden="true">♪</span>
+  <span class="gmk-music__note gmk-music__note--two" aria-hidden="true">♫</span>
+</button>
+
+<script is:inline defer src={`${import.meta.env.BASE_URL}music-player.js`}></script>

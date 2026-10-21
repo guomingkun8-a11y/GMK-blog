@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import MusicPlayer from "../components/MusicPlayer.astro";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const homeHref = `${basePath}/`;
@@ -11,13 +12,16 @@ const homeHref = `${basePath}/`;
 >
   <main class="ai-chat" id="top">
     <header class="ai-chat__topbar">
-      <a class="ai-chat__brand" href={homeHref} aria-label="返回郭明坤的博客首页">
-        <span class="ai-chat__brand-mark" aria-hidden="true">GMK</span>
-        <span class="ai-chat__brand-copy">
-          <strong>郭明坤的 AI 分身</strong>
-          <small><i aria-hidden="true"></i>在线 · 随便聊聊</small>
-        </span>
-      </a>
+      <div class="ai-chat__brand-row">
+        <a class="ai-chat__brand" href={homeHref} aria-label="返回郭明坤的博客首页">
+          <span class="ai-chat__brand-mark" aria-hidden="true">GMK</span>
+          <span class="ai-chat__brand-copy">
+            <strong>郭明坤的 AI 分身</strong>
+            <small><i aria-hidden="true"></i>在线 · 随便聊聊</small>
+          </span>
+        </a>
+        <MusicPlayer />
+      </div>
       <a class="ai-chat__back" href={homeHref}>返回博客</a>
     </header>
 

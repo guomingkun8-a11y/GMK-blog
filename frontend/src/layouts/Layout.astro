@@ -41,6 +41,7 @@ const {
   </head>
   <body>
     <slot />
+
     {!Astro.url.pathname.replace(/\/$/, "").endsWith("/chat") && (
       <script is:inline src={`${import.meta.env.BASE_URL}reveal.js`} />
     )}
