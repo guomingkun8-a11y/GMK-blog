@@ -17,6 +17,8 @@ const base = import.meta.env.BASE_URL;
 const basePath = base.replace(/\/$/, "");
 const noteHref = (category: string, slug: string) =>
   `${basePath}/notes/${category}/${slug}`;
+// 封面路径：base 和 cover 都可能带斜杠，规范化避免出现 // 开头（会被当成协议相对地址）
+const coverSrc = (cover: string) => `${basePath}/${cover.replace(/^\//, "")}`;
 ---
 
 <Layout>
@@ -42,7 +44,7 @@ const noteHref = (category: string, slug: string) =>
                 <a class="post-card__link" href={noteHref(note.category.id, note.slug)}>
                   {note.cover && (
                     <span class="post-card__cover">
-                      <img src={`${base}${note.cover}`} alt="" loading="lazy" />
+                      <img src={coverSrc(note.cover)} alt="" loading="lazy" />
                     </span>
                   )}
                   <span class="post-card__cat">{note.category.name}</span>
