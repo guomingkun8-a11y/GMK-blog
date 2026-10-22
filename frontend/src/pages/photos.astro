@@ -1,0 +1,114 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// ===== 相册：自己拍的照片，一张张写在这里 =====
+// 上传方式：把照片放进 frontend/public/photos/ 目录
+// 然后在下面数组里加一条 { src, alt, title, desc, date }
+// src 用相对 public 的路径，如 "/photos/xxx.jpg"
+const photos = [
+  // 示例：等你有照片后替换 / 追加
+  {
+    src: "/illustrations/coffee.jpg",
+    alt: "咖啡",
+    title: "一杯手冲",
+    desc: "周末下午，阳光正好，给自己冲了一杯咖啡。苦涩里有回甘，就像生活。",
+    date: "2026-10",
+  },
+  {
+    src: "/illustrations/fastapi.jpg",
+    alt: "FastAPI",
+    title: "写代码的日子",
+    desc: "桌面上摊开的笔记本，正在折腾一个新的 FastAPI 项目。键盘敲击声里，时间过得特别快。",
+    date: "2026-10",
+  },
+  {
+    src: "/illustrations/coffee.jpg",
+    alt: "咖啡",
+    title: "窗外",
+    desc: "透过窗看出去，天光渐渐暗下来。那一刻觉得，慢一点也挺好。",
+    date: "2026-10",
+  },
+];
+
+// 照片数据序列化给前端脚本（详情过渡用）
+const photosJson = JSON.stringify(
+  photos.map((p) => ({ ...p, src: `${basePath}/${p.src.replace(/^\//, "")}` }))
+);
+---
+
+<Layout title="相册 | 郭明坤" description="郭明坤的相册——自己拍的、记录生活的照片。">
+  <SiteHeader />
+
+  <main class="page" id="top">
+    <div class="page__inner">
+      <section class="page__hero" data-reveal>
+        <p class="page__eyebrow">相册</p>
+      </section>
+
+      <section class="page__body page__body--wide">
+        {photos.length === 0 ? (
+          <p class="page__empty">
+            相册还是空的。把照片放进 <code>frontend/public/photos/</code>，再在
+            <code>photos.astro</code> 里登记一张，就能在这里显示了。
+          </p>
+        ) : (
+          <>
+            <!-- 网格视图 -->
+            <ul class="photo-grid" data-photo-grid>
+              {photos.map((p, i) => (
+                <li
+                  class="photo-card"
+                  data-photo-reveal
+                  style={`--stagger: ${Math.min(i, 8) * 0.08}s`}
+                >
+                  <button
+                    class="photo-card__btn"
+                    type="button"
+                    data-photo-index={i}
+                    aria-label={`查看照片：${p.title}`}
+                  >
+                    <figure>
+                      <img src={`${basePath}/${p.src.replace(/^\//, "")}`} alt={p.alt} loading="lazy" />
+                      <figcaption>{p.title}</figcaption>
+                    </figure>
+                    <time class="photo-card__date">{p.date}</time>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            <dialog class="photo-detail" data-photo-detail aria-labelledby="photo-detail-title">
+              <div class="photo-detail__inner">
+                <button class="photo-detail__back" type="button" aria-label="返回相册">← 返回相册</button>
+                <div class="photo-detail__layout">
+                  <figure class="photo-detail__figure">
+                    <img data-photo-detail-img src="" alt="" />
+                  </figure>
+                  <div class="photo-detail__text">
+                    <time class="photo-detail__date" data-photo-detail-date></time>
+                    <h2 class="photo-detail__title" id="photo-detail-title" data-photo-detail-title></h2>
+                    <p class="photo-detail__desc" data-photo-detail-desc></p>
+                  </div>
+                </div>
+              </div>
+            </dialog>
+          </>
+        )}
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© {new Date().getFullYear()} 郭明坤</p>
+      <a class="site-footer__back" href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+  <script is:inline set:html={`window.__GMK_PHOTOS__ = ${photosJson};`} />
+  <script is:inline src={`${import.meta.env.BASE_URL}photo-reveal.js`}></script>
+  <script is:inline src={`${import.meta.env.BASE_URL}photo-detail.js`}></script>
+</Layout>

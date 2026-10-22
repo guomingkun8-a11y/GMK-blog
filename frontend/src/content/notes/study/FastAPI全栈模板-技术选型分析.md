@@ -1,5 +1,5 @@
 ---
-title: "FastAPI 全栈模板技术选型分析：用了什么、为什么、好在哪"
+title: "FastAPI 全栈模板：技术选型分析"
 summary: "拆解官方模板 full-stack-fastapi-template 的技术选型，逐项讲清楚用了什么、为什么这么用、好在哪、边界在哪。"
 category: "study"
 date: 2026-10-22
@@ -7,33 +7,28 @@ tags: ["FastAPI", "后端", "技术选型"]
 cover: "/illustrations/fastapi.jpg"
 ---
 
-# FastAPI 全栈模板技术选型分析：用了什么、为什么、好在哪
-
-这篇文章拆解官方模板 `full-stack-fastapi-template` 的技术选型，逐项讲清楚它**用了什么、为什么这么用、好在哪、边界在哪**。读完之后，你能理解一套成熟的全栈项目是怎么做技术决策的。
-
----
-
 ## 一、技术栈总览
 
-| 层 | 选型 | 一句话理由 |
-| --- | --- | --- |
-| Web 框架 | FastAPI | 原生异步、自动生成 OpenAPI 文档 |
-| ORM | SQLModel | 把 Pydantic 校验和 SQLAlchemy 映射合二为一 |
-| 数据校验 | Pydantic v2 | 用类型注解做运行时校验，同时驱动文档生成 |
-| 数据库 | PostgreSQL | 功能全、生态成熟、适合生产 |
-| 迁移 | Alembic | 表结构变更可版本化、可回滚 |
-| 认证 | JWT（HS256） | 无状态、适合前后端分离 |
-| 密码哈希 | Argon2 + Bcrypt | 抗暴力破解，且支持渐进式迁移 |
-| 前端 | React 19 + TypeScript | 组件化 + 类型安全 |
-| 构建 | Vite 8 | 极快的冷启动和热更新 |
-| 样式 | Tailwind CSS 4 + shadcn/ui | 原子化样式 + 可复制的组件库 |
-| 数据请求 | TanStack Query / Router / Table | 服务端状态管理、类型化路由、表格 |
-| 表单 | React Hook Form + Zod | 性能好的表单 + 前后端一致的校验 |
-| Python 包管理 | uv | 快、可复现、锁文件 |
-| JS 包管理 | bun | 快、原生支持 workspace |
-| 部署 | Docker Compose + Traefik | 一键编排 + 自动 HTTPS |
+### 后端与数据
 
----
+- **FastAPI**：原生异步，自动生成 OpenAPI 文档。
+- **SQLModel**：结合 Pydantic 校验与 SQLAlchemy 映射。
+- **Pydantic v2**：用类型注解做运行时校验，并驱动文档生成。
+- **PostgreSQL + Alembic**：成熟的数据库能力，表结构变更可版本化、回滚。
+- **JWT（HS256）+ Argon2 / Bcrypt**：前后端分离认证，支持密码哈希的渐进式迁移。
+
+### 前端
+
+- **React 19 + TypeScript**：组件化开发和类型安全。
+- **Vite 8**：快速冷启动与热更新。
+- **Tailwind CSS 4 + shadcn/ui**：原子化样式与可复制的组件。
+- **TanStack Query / Router / Table**：数据请求、类型化路由和表格。
+- **React Hook Form + Zod**：表单管理与校验。
+
+### 工具与部署
+
+- **uv + bun**：Python 与 JS 依赖管理，都支持锁文件。
+- **Docker Compose + Traefik**：服务编排、路由和 HTTPS。
 
 ## 二、为什么用 SQLModel，而不是直接 SQLAlchemy
 
@@ -58,8 +53,6 @@ cover: "/illustrations/fastapi.jpg"
 
 **代价 / 边界**：`SQLModel` 比纯 SQLAlchemy 年轻，极复杂的关系映射和高级特性覆盖不如后者全。所以它适合中小型项目；超大、超复杂的数据模型场景，仍可能回退到原生 SQLAlchemy。
 
----
-
 ## 三、为什么一个实体要拆成多个模型类
 
 **用了什么**：`models.py` 里，`User` 和 `Item` 每个实体都拆成了多个类——`XxxBase`、`XxxCreate`、`XxxUpdate`、`Xxx`（表）、`XxxPublic`。
@@ -82,8 +75,6 @@ cover: "/illustrations/fastapi.jpg"
 3. **变更可控**：加一个字段，能精确控制它出现在「入参」「出参」还是「数据库」哪一层。
 
 **核心思想**：好的模型设计不只是为了复用，更为了**限制**——明确每个方向允许流动哪些数据，本身就是防御。
-
----
 
 ## 四、为什么用依赖注入做鉴权
 
@@ -111,8 +102,6 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 3. **可组合**：`get_current_active_superuser` 依赖 `get_current_user`，链式叠加出「管理员专属」这种更高权限。
 4. **改一处全局生效**：改 `get_current_user` 的实现，所有用到它的接口同步更新。
 
----
-
 ## 五、为什么权限写在查询条件里，而不是 if 里
 
 **用了什么**：列表接口通过 `where` 子句做数据隔离，而不是查全表后过滤。
@@ -137,8 +126,6 @@ select(Item).where(Item.owner_id == current_user.id)
 
 **原则**：权限控制必须下沉到数据层，不能只在应用层做判断。
 
----
-
 ## 六、为什么密码哈希用两个算法
 
 **用了什么**：`pwdlib` 库，同时配置 `Argon2Hasher` 和 `BcryptHasher` 两个哈希器。
@@ -155,8 +142,6 @@ select(Item).where(Item.owner_id == current_user.id)
 校验密码的函数返回元组 `(是否通过, 需要更新的新哈希)`。当用户密码还是旧的 Bcrypt 哈希时，校验通过的同时会返回一个新的 Argon2 哈希，系统静默写回数据库。
 
 **效果**：用户无需任何操作，只需正常登录一次，密码算法就完成了从 Bcrypt 到 Argon2 的迁移。这是生产系统升级密码算法的标准做法——**渐进式、无感知**，而不是停服强制改密码。
-
----
 
 ## 七、为什么用 JWT 做认证
 
@@ -179,8 +164,6 @@ JWT 的特点正好契合：token 自带用户身份信息（`sub` 字段存用�
 - JWT 是**签名**不是**加密**，payload 可被 base64 解码，所以**绝不能放敏感信息**，只能放用户 ID 这种标识符。
 - 因为无状态，token 在过期前无法强制失效。所以 `get_current_user` 解完 token 后**必须再查一次数据库**，确认用户当前状态（是否被禁用、是否还存在），否则禁用用户后他的旧 token 还能用到过期。
 
----
-
 ## 八、为什么本地开发用 Docker，而不用原生装数据库
 
 **用了什么**：PostgreSQL、Mailpit（本地邮件捕获）、Adminer（数据库管理界面）都跑在 Docker Compose 里。
@@ -199,8 +182,6 @@ JWT 的特点正好契合：token 自带用户身份信息（`sub` 字段存用�
 2. **环境一致**：所有人用同一个镜像和版本，消除「我机器上能跑」的问题。
 3. **隔离干净**：基础设施都在容器里，不污染本机，随时可删。
 4. **Mailpit 的价值**：本地开发时，找回密码等邮件被 Mailpit 拦截，在网页上查看，而不会真的发出去。
-
----
 
 ## 九、为什么用 Traefik 而不是 Nginx 做反向代理
 
@@ -224,8 +205,6 @@ labels:
 
 **边界**：Traefik 强在容器和微服务场景；如果是有大量定制化 rewrite 规则的复杂静态站点，Nginx 的配置文件反而更直观。选型看场景。
 
----
-
 ## 十、为什么前后端契约要自动生成
 
 **用了什么**：前端 API 客户端不是手写的，而是用 `openapi-ts` 从后端的 OpenAPI 文档自动生成。
@@ -246,8 +225,6 @@ Pydantic 模型 → OpenAPI Schema → TypeScript 类型 + 请求函数
 
 **这背后的设计原则**：FastAPI 从 Pydantic 模型自动导出 OpenAPI，是这个链路的起点——**数据模型只定义一次，文档、校验、前端类型全部派生**。
 
----
-
 ## 十一、为什么前端要同时用 Tailwind 和 shadcn/ui
 
 **用了什么**：样式用 Tailwind CSS 4（原子化 CSS），组件用 shadcn/ui。
@@ -264,8 +241,6 @@ Pydantic 模型 → OpenAPI Schema → TypeScript 类型 + 请求函数
 1. **Tailwind**：样式内聚、无全局污染、构建时自动剔除未用样式。
 2. **shadcn/ui**：组件代码在你手里，可自由定制，不被第三方库锁死；基于 Radix UI，无障碍和交互质量有保证。
 3. **组合效应**：Tailwind 让 shadcn/ui 的组件样式易于微调，两者天然契合。
-
----
 
 ## 十二、为什么用 uv 和 bun 做包管理
 
@@ -284,11 +259,9 @@ Pydantic 模型 → OpenAPI Schema → TypeScript 类型 + 请求函数
 2. **可复现**：都有锁文件（`uv.lock`、`bun.lock`），精确锁定版本，保证团队环境一致。
 3. **原生 workspace**：一个项目同时管理前端和后端依赖，monorepo 结构清晰。
 
----
-
 ## 总结：这套选型的底层逻辑
 
-把上面十一项串起来，能看到一条清晰的选择主线：
+把上面的选型串起来，能看到一条清晰的选择主线：
 
 | 选型 | 背后的原则 |
 | --- | --- |
@@ -298,8 +271,6 @@ Pydantic 模型 → OpenAPI Schema → TypeScript 类型 + 请求函数
 | Argon2+Bcrypt、JWT | **渐进式与无状态**——迁移无感知，服务可扩展 |
 | Docker、Traefik | **环境一致 + 自动化**——减少人工配置和人为错误 |
 | uv、bun、Tailwind、shadcn/ui | **开发效率**——把时间花在业务上，而非环境搭建和样板代码 |
-
----
 
 ## 参考链接
 
