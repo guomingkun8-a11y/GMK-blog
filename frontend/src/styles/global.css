@@ -1916,6 +1916,39 @@ a {
 	background: #f7f7f7;
 }
 
+/* 行内代码 */
+.article__body code {
+	padding: 0.15rem 0.4rem;
+	border: 1px solid var(--color-line-soft);
+	border-radius: 0.35rem;
+	background: #f1eee7;
+	color: #a34327;
+	font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', monospace;
+	font-size: 0.85em;
+}
+
+/* 代码块（Astro 内置 Shiki 高亮，主题 github-dark；这里只补布局，颜色交给 Shiki） */
+.article__body pre {
+	margin: 1.6rem 0;
+	padding: 1.1rem 1.3rem;
+	overflow-x: auto;
+	border: 1px solid var(--color-line);
+	border-radius: 0.75rem;
+	font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', monospace;
+	font-size: 0.875rem;
+	line-height: 1.7;
+	box-shadow: 0 1px 2px rgba(28, 26, 23, 0.04);
+}
+
+.article__body pre code {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font-size: inherit;
+}
+
 .article__nav {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
