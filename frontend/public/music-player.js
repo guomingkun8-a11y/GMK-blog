@@ -17,13 +17,36 @@
     /* ignore */
   }
 
-  const audio = new Audio(tracks[0]);
+  const audio = new Audio();
   audio.preload = "none";
   audio.volume = 0.5;
-  let index = 0;
+  // 洗牌循环：打乱后的播放顺序，一轮播完再重新洗牌
+  let order = shuffle(tracks.map((_, i) => i));
+  let pos = 0; // 在 order 中的位置
+  let index = order[0];
+  audio.src = tracks[index]; // 设置初始播放源
   let playing = false;
   let failed = 0;
   let shouldPlay = saved !== "off";
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function nextTrack() {
+    pos += 1;
+    if (pos >= order.length) {
+      order = shuffle(order);
+      pos = 0;
+    }
+    index = order[pos];
+    audio.src = tracks[index];
+  }
 
   function setPlaying(next) {
     playing = next;
@@ -65,9 +88,8 @@
 
   audio.addEventListener("ended", () => {
     failed = 0;
-    index = (index + 1) % tracks.length;
+    nextTrack();
     setPlaying(playing);
-    audio.src = tracks[index];
     play();
   });
 
@@ -78,9 +100,8 @@
       btn.title = "音乐暂不可用";
       return;
     }
-    index = (index + 1) % tracks.length;
+    nextTrack();
     setPlaying(playing);
-    audio.src = tracks[index];
     play();
   });
 
