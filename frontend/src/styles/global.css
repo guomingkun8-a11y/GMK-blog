@@ -2119,6 +2119,11 @@ a.article__nav-item:hover strong {
 	max-width: 46rem;
 }
 
+.page__body--gallery {
+	max-width: none;
+	width: 100%;
+}
+
 .news__head {
 	display: flex;
 	align-items: baseline;
