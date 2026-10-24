@@ -2762,13 +2762,16 @@ a.article__nav-item:hover strong {
 
 /* ===== 相册（照片墙） ===== */
 .photo-grid {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 1.5rem;
-	align-items: start;
+	columns: 3;
+	column-gap: 1.5rem;
 	margin: 0;
 	padding: 0;
 	list-style: none;
+}
+
+.photo-grid > li {
+	break-inside: avoid;
+	margin-bottom: 1.5rem;
 }
 
 .photo-card {
@@ -3015,7 +3018,7 @@ a.article__nav-item:hover strong {
 
 @media (max-width: 720px) {
 	.photo-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		columns: 2;
 	}
 
 	.photo-detail__layout {
@@ -3026,7 +3029,7 @@ a.article__nav-item:hover strong {
 
 @media (max-width: 480px) {
 	.photo-grid {
-		grid-template-columns: 1fr;
+		columns: 1;
 	}
 }
 
