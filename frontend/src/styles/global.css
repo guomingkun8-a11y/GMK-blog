@@ -2763,7 +2763,7 @@ a.article__nav-item:hover strong {
 /* ===== 相册（照片墙） ===== */
 .photo-grid {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 	gap: 1.25rem;
 	margin: 0;
 	padding: 0;
