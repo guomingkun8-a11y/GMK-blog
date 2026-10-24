@@ -8,6 +8,7 @@ function initPhotoDetail() {
   const detailTitle = detail.querySelector("[data-photo-detail-title]");
   const detailDesc = detail.querySelector("[data-photo-detail-desc]");
   const detailDate = detail.querySelector("[data-photo-detail-date]");
+  const detailSource = detail.querySelector("[data-photo-detail-source]");
   const backButton = detail.querySelector(".photo-detail__back");
   const photos = window.__GMK_PHOTOS__ || [];
   const buttons = [...grid.querySelectorAll("[data-photo-index]")];
@@ -54,6 +55,15 @@ function initPhotoDetail() {
     detailTitle.textContent = photo.title || "";
     detailDesc.textContent = photo.desc || "";
     detailDate.textContent = photo.date || "";
+    if (detailSource) {
+      if (photo.sourceUrl) {
+        detailSource.textContent = photo.source ? `图片来源：${photo.source}` : "图片来源";
+        detailSource.href = photo.sourceUrl;
+        detailSource.hidden = false;
+      } else {
+        detailSource.hidden = true;
+      }
+    }
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     backButton.disabled = true;

@@ -2966,6 +2966,20 @@ a.article__nav-item:hover strong {
 	color: var(--color-ink-soft, #55504a);
 }
 
+.photo-detail__source {
+	display: inline-block;
+	margin-top: 1.25rem;
+	font-size: 0.875rem;
+	color: var(--color-accent, #b5502e);
+	text-decoration: none;
+	border-bottom: 1px solid currentColor;
+	padding-bottom: 1px;
+}
+
+.photo-detail__source:hover {
+	opacity: 0.75;
+}
+
 .photo-card figure {
 	margin: 0;
 }

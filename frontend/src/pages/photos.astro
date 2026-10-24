@@ -11,11 +11,13 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const photos = [
   // 示例：等你有照片后替换 / 追加
   {
-    src: "/illustrations/coffee.jpg",
-    alt: "咖啡",
-    title: "一杯手冲",
-    desc: "周末下午，阳光正好，给自己冲了一杯咖啡。苦涩里有回甘，就像生活。",
+    src: "/photos/加沙援助紧急情况.jpg",
+    alt: "一名巴勒斯坦人爬上援助卡车，试图取到面粉",
+    title: "加沙援助紧急情况",
+    desc: "摄影师萨贝尔·努拉尔丁（巴勒斯坦）拍下的瞬间：一名巴勒斯坦人爬上进入加沙地带的援助卡车，试图拿到面粉。当时以色列军队称这是一次“战术性暂停”，以允许人道主义援助通过齐基姆十字路口。",
     date: "2026-10",
+    source: "World Press Photo",
+    sourceUrl: "https://www.worldpressphoto.org/collection/photo-contest/2026/Saber-Nuraldin-FIN/1",
   },
   {
     src: "/illustrations/fastapi.jpg",
@@ -91,6 +93,7 @@ const photosJson = JSON.stringify(
                     <time class="photo-detail__date" data-photo-detail-date></time>
                     <h2 class="photo-detail__title" id="photo-detail-title" data-photo-detail-title></h2>
                     <p class="photo-detail__desc" data-photo-detail-desc></p>
+                    <a class="photo-detail__source" data-photo-detail-source href="" target="_blank" rel="noopener noreferrer"></a>
                   </div>
                 </div>
               </div>
