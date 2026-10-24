@@ -4,7 +4,7 @@ summary: "当 AI 和 Agent 越来越擅长写代码时，程序员真正该积�
 category: "work"
 date: 2026-10-24
 tags: ["AI", "程序员", "职业成长", "需求发现", "思考"]
-cover: "/illustrations/fastapi.jpg"
+cover: "/illustrations/ai-era-programmer.jpg"
 ---
 
 # AI 时代，程序员不能只等需求：从写代码走向发现问题
