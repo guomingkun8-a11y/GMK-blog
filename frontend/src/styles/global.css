@@ -2988,7 +2988,8 @@ a.article__nav-item:hover strong {
 	display: block;
 	width: 100%;
 	aspect-ratio: 4 / 3;
-	object-fit: cover;
+	object-fit: contain;
+	background: var(--color-surface);
 }
 
 .photo-card figcaption {
