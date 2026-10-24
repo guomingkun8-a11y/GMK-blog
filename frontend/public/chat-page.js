@@ -28,6 +28,9 @@
     form.classList.toggle("is-busy", value);
   }
 
+  var basePath = String(window.__GMK_BASE__ || "/").replace(/\/$/, "");
+  var AVATAR_SRC = basePath + "/avatar.png";
+
   function addMessage(role, text) {
     if (welcome) welcome.hidden = true;
     var row = document.createElement("div");
@@ -35,7 +38,11 @@
 
     var avatar = document.createElement("span");
     avatar.className = "ai-chat__message-avatar";
-    avatar.textContent = role === "assistant" ? "GMK" : "你";
+    if (role === "assistant") {
+      avatar.innerHTML = '<img src="' + AVATAR_SRC + '" alt="" />';
+    } else {
+      avatar.textContent = "你";
+    }
 
     var bubble = document.createElement("div");
     bubble.className = "ai-chat__bubble";
@@ -53,7 +60,7 @@
     if (show && !typing) {
       var row = document.createElement("div");
       row.className = "ai-chat__row ai-chat__row--assistant ai-chat__typing";
-      row.innerHTML = '<span class="ai-chat__message-avatar">GMK</span><div class="ai-chat__bubble"><i></i><i></i><i></i></div>';
+      row.innerHTML = '<span class="ai-chat__message-avatar"><img src="' + AVATAR_SRC + '" alt="" /></span><div class="ai-chat__bubble"><i></i><i></i><i></i></div>';
       list.appendChild(row);
       scrollToBottom();
     } else if (!show && typing) {

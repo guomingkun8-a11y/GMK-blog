@@ -903,6 +903,22 @@ a {
 	letter-spacing: 0.02em;
 }
 
+.ai-chat__brand-mark img,
+.ai-chat__message-avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: inherit;
+}
+
+.site-mark__avatar {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+	object-fit: cover;
+	display: block;
+}
+
 .ai-chat__brand-copy {
 	display: flex;
 	flex-direction: column;
