@@ -78,9 +78,7 @@ const photosJson = JSON.stringify(
                   >
                     <figure>
                       <img src={`${basePath}/${p.src.replace(/^\//, "")}`} alt={p.alt} loading="lazy" />
-                      <figcaption>{p.title}</figcaption>
                     </figure>
-                    <time class="photo-card__date">{p.date}</time>
                   </button>
                 </li>
               ))}
