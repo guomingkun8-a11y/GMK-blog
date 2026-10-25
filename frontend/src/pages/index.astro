@@ -28,7 +28,7 @@ const coverSrc = (cover: string) => `${basePath}/${cover.replace(/^\//, "")}`;
     <div class="home__inner">
       <!-- 刊头：巨型标题，整行压住页面 -->
       <header class="home__masthead" data-reveal>
-        <h1 class="home__masthead-title">Guomingkun's Blog</h1>
+        <h1 class="home__masthead-title" data-typewriter aria-label="Guomingkun's Blog"><span data-typewriter-text>Guomingkun's Blog</span><span class="typewriter-cursor" aria-hidden="true"></span></h1>
         <p class="home__masthead-sub">记录技术，也记录生活。</p>
       </header>
 
@@ -107,4 +107,34 @@ const coverSrc = (cover: string) => `${basePath}/${cover.replace(/^\//, "")}`;
       <a class="site-footer__back" href="#top">回到顶部 ↑</a>
     </div>
   </footer>
+  <script>
+    // 刊头标题打字机效果：逐字打印，光标闪烁，打完后光标停留片刻再消失
+    const textEl = document.querySelector("[data-typewriter-text]");
+    const title = textEl ? textEl.textContent.trim() : "";
+    if (textEl && title) {
+      // 预占宽度，避免打字过程中标题尺寸跳动
+      textEl.textContent = title;
+      const ghost = document.createElement("span");
+      ghost.style.cssText = "visibility:hidden;position:absolute;white-space:nowrap;";
+      ghost.textContent = title;
+      textEl.parentElement.appendChild(ghost);
+
+      textEl.textContent = "";
+      let i = 0;
+      const tick = () => {
+        textEl.textContent = title.slice(0, ++i);
+        if (i < title.length) {
+          setTimeout(tick, 90 + Math.random() * 80);
+        } else {
+          setTimeout(() => {
+            const cursor = textEl.parentElement.querySelector(".typewriter-cursor");
+            if (cursor) cursor.remove();
+            ghost.remove();
+          }, 1600);
+        }
+      };
+      // 等首次渐入动画结束后再开始打字
+      setTimeout(tick, 700);
+    }
+  </script>
 </Layout>

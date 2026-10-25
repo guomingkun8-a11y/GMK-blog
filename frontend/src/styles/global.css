@@ -179,6 +179,29 @@ a {
 	letter-spacing: -0.02em;
 }
 
+/* 打字机光标 */
+.typewriter-cursor {
+	display: inline-block;
+	width: 0.06em;
+	height: 0.82em;
+	margin-left: 0.06em;
+	vertical-align: -0.08em;
+	background: var(--color-ink);
+	animation: typewriter-blink 0.9s steps(1) infinite;
+}
+
+@keyframes typewriter-blink {
+	50% {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.typewriter-cursor {
+		animation: none;
+	}
+}
+
 .home__masthead-sub {
 	margin: 1.25rem 0 0;
 	color: var(--color-faint);
