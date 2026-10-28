@@ -4,7 +4,7 @@ summary: "RAGFlow 是一个开源的 RAG（检索增强生成）引擎，强在�
 category: "study"
 date: 2026-10-27
 tags: ["RAGFlow", "RAG", "Dify", "AI", "知识库", "大模型"]
-cover: "/illustrations/fastapi.jpg"
+cover: "/illustrations/ragflow.jpg"
 ---
 
 # RAGFlow 的理解和使用
