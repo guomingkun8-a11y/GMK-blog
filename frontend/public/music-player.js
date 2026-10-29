@@ -11,14 +11,12 @@
   if (!tracks.length) return;
 
   // 面板内元素
-  const trackEl = document.getElementById("gmk-music-panel-track");
   const rangeEl = document.getElementById("gmk-music-range");
   const currentEl = document.getElementById("gmk-music-current");
   const durationEl = document.getElementById("gmk-music-duration");
   const playBtn = panel.querySelector("[data-music-play]");
   const prevBtn = panel.querySelector("[data-music-prev]");
   const nextBtn = panel.querySelector("[data-music-next]");
-  const closeBtn = panel.querySelector("[data-music-close]");
 
   const audio = new Audio();
   audio.preload = "metadata";
@@ -61,9 +59,6 @@
   }
 
   function loadTrack() {
-    const name = names[index];
-    trackEl.textContent = name;
-    trackEl.title = name;
     durationEl.textContent = "0:00";
     currentEl.textContent = "0:00";
     rangeEl.value = "0";
@@ -125,8 +120,6 @@
     else closePanel();
   });
 
-  closeBtn.addEventListener("click", closePanel);
-
   // 点击面板外区域关闭
   document.addEventListener("click", (e) => {
     if (panel.hidden) return;
@@ -171,7 +164,6 @@
     if (!playing) return;
     if (++failed >= tracks.length) {
       setPlaying(false);
-      trackEl.textContent = "音乐暂不可用";
       return;
     }
     nextTrack();

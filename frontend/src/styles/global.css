@@ -638,7 +638,7 @@ a {
 	}
 }
 
-/* ===== 音乐面板：点击唱片才出现，带进度条 ===== */
+/* ===== 音乐控制区：点击唱片后在导航栏内向右展开 ===== */
 .gmk-music-wrap {
 	position: relative;
 	flex: 0 0 auto;
@@ -649,15 +649,16 @@ a {
 .gmk-music-panel {
 	position: absolute;
 	z-index: 60;
-	left: 0;
-	top: calc(100% + 0.75rem);
-	width: min(20rem, calc(100vw - 2rem));
-	padding: 1.25rem 1.25rem 1rem;
+	left: calc(100% + 0.7rem);
+	top: 50%;
+	width: min(19rem, calc(100vw - 8rem));
+	padding: 0.7rem 0.9rem 0.75rem;
 	border: 1px solid var(--color-line);
-	border-radius: 1rem;
+	border-radius: 0.9rem;
 	background: var(--color-surface);
-	box-shadow: 0 18px 40px rgba(28, 26, 23, 0.14), 0 4px 12px rgba(28, 26, 23, 0.06);
-	animation: gmk-panel-in 0.24s var(--ease-out);
+	box-shadow: 0 12px 28px rgba(28, 26, 23, 0.12);
+	transform: translateY(-50%);
+	animation: gmk-panel-in 0.2s var(--ease-out);
 }
 
 .gmk-music-panel[hidden] {
@@ -667,55 +668,17 @@ a {
 @keyframes gmk-panel-in {
 	from {
 		opacity: 0;
-		transform: translateY(-0.5rem) scale(0.98);
+		transform: translate(-0.4rem, -50%) scale(0.98);
 	}
 
 	to {
 		opacity: 1;
-		transform: translateY(0) scale(1);
+		transform: translate(0, -50%) scale(1);
 	}
 }
 
-.gmk-music-panel__head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 0.75rem;
-}
-
-.gmk-music-panel__title {
-	font-family: var(--font-display);
-	font-size: 1.05rem;
-	font-weight: 600;
-	color: var(--color-ink);
-}
-
-.gmk-music-panel__close {
-	padding: 0;
-	border: 0;
-	background: transparent;
-	color: var(--color-faint);
-	font-size: 1.5rem;
-	line-height: 1;
-	cursor: pointer;
-	transition: color 180ms var(--ease-out);
-}
-
-.gmk-music-panel__close:hover {
-	color: var(--color-ink);
-}
-
-.gmk-music-panel__track {
-	margin: 0 0 1rem;
-	font-size: 0.9rem;
-	color: var(--color-muted);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .gmk-music-panel__progress {
-	margin-bottom: 1rem;
+	margin-bottom: 0.55rem;
 }
 
 .gmk-music-panel__range {
