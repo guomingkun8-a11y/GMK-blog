@@ -649,14 +649,15 @@ a {
 .gmk-music-panel {
 	position: absolute;
 	z-index: 60;
-	left: calc(100% + 0.7rem);
+	left: calc(100% + 0.55rem);
 	top: 50%;
-	width: min(19rem, calc(100vw - 8rem));
-	padding: 0.7rem 0.9rem 0.75rem;
+	box-sizing: border-box;
+	width: min(14.5rem, calc(100vw - 8rem));
+	padding: 0.4rem 0.65rem 0.45rem;
 	border: 1px solid var(--color-line);
-	border-radius: 0.9rem;
+	border-radius: 0.75rem;
 	background: var(--color-surface);
-	box-shadow: 0 12px 28px rgba(28, 26, 23, 0.12);
+	box-shadow: 0 8px 20px rgba(28, 26, 23, 0.1);
 	transform: translateY(-50%);
 	animation: gmk-panel-in 0.2s var(--ease-out);
 }
@@ -678,12 +679,13 @@ a {
 }
 
 .gmk-music-panel__progress {
-	margin-bottom: 0.55rem;
+	margin-bottom: 0.25rem;
 }
 
 .gmk-music-panel__range {
+	display: block;
 	width: 100%;
-	height: 4px;
+	height: 3px;
 	margin: 0;
 	appearance: none;
 	-webkit-appearance: none;
@@ -696,8 +698,8 @@ a {
 .gmk-music-panel__range::-webkit-slider-thumb {
 	appearance: none;
 	-webkit-appearance: none;
-	width: 14px;
-	height: 14px;
+	width: 11px;
+	height: 11px;
 	border-radius: 50%;
 	background: var(--color-accent);
 	border: 2px solid var(--color-surface);
@@ -706,8 +708,8 @@ a {
 }
 
 .gmk-music-panel__range::-moz-range-thumb {
-	width: 14px;
-	height: 14px;
+	width: 11px;
+	height: 11px;
 	border-radius: 50%;
 	background: var(--color-accent);
 	border: 2px solid var(--color-surface);
@@ -718,8 +720,8 @@ a {
 .gmk-music-panel__time {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 0.4rem;
-	font-size: 0.75rem;
+	margin-top: 0.2rem;
+	font-size: 0.65rem;
 	color: var(--color-faint);
 	font-variant-numeric: tabular-nums;
 }
@@ -728,18 +730,18 @@ a {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.75rem;
+	gap: 0.5rem;
 }
 
 .gmk-music-panel__btn {
-	width: 2.5rem;
-	height: 2.5rem;
+	width: 1.75rem;
+	height: 1.75rem;
 	padding: 0;
 	border: 1px solid var(--color-line);
 	border-radius: 50%;
 	background: var(--color-surface);
 	color: var(--color-muted);
-	font-size: 0.85rem;
+	font-size: 0.62rem;
 	line-height: 1;
 	cursor: pointer;
 	transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), background 180ms var(--ease-out), transform 180ms var(--ease-out);
@@ -755,12 +757,12 @@ a {
 }
 
 .gmk-music-panel__btn--play {
-	width: 3rem;
-	height: 3rem;
+	width: 2.15rem;
+	height: 2.15rem;
 	background: var(--color-ink);
 	border-color: var(--color-ink);
 	color: #fff;
-	font-size: 0.95rem;
+	font-size: 0.72rem;
 }
 
 .gmk-music-panel__btn--play:hover {
