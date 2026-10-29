@@ -9,13 +9,14 @@ const tracks = readdirSync(musicDir, { withFileTypes: true })
   .sort((a, b) => a.localeCompare(b, "zh-CN", { numeric: true }));
 ---
 
+<!-- 唱片开关：点击弹出音乐面板 -->
 <button
   class="gmk-music"
   id="gmk-music"
   type="button"
   aria-pressed="false"
-  aria-label={tracks.length ? "播放音乐" : "暂无音乐"}
-  title={tracks.length ? "播放音乐" : "暂无音乐"}
+  aria-label={tracks.length ? "打开音乐" : "暂无音乐"}
+  title={tracks.length ? "打开音乐" : "暂无音乐"}
   data-tracks={JSON.stringify(tracks)}
   disabled={!tracks.length}
 >
@@ -24,5 +25,39 @@ const tracks = readdirSync(musicDir, { withFileTypes: true })
   <span class="gmk-music__note gmk-music__note--one" aria-hidden="true">♪</span>
   <span class="gmk-music__note gmk-music__note--two" aria-hidden="true">♫</span>
 </button>
+
+<!-- 音乐面板：默认隐藏，点击唱片才出现 -->
+<div class="gmk-music-panel" id="gmk-music-panel" hidden aria-label="音乐播放器">
+  <div class="gmk-music-panel__head">
+    <span class="gmk-music-panel__title" id="gmk-music-panel-title">音乐</span>
+    <button class="gmk-music-panel__close" type="button" aria-label="关闭" data-music-close>&times;</button>
+  </div>
+
+  <p class="gmk-music-panel__track" id="gmk-music-panel-track" title="">—</p>
+
+  <div class="gmk-music-panel__progress">
+    <input
+      class="gmk-music-panel__range"
+      id="gmk-music-range"
+      type="range"
+      min="0"
+      max="100"
+      step="0.1"
+      value="0"
+      aria-label="播放进度"
+      data-music-range
+    />
+    <div class="gmk-music-panel__time">
+      <span id="gmk-music-current">0:00</span>
+      <span id="gmk-music-duration">0:00</span>
+    </div>
+  </div>
+
+  <div class="gmk-music-panel__controls">
+    <button class="gmk-music-panel__btn" type="button" aria-label="上一首" data-music-prev>&#9664;&#9664;</button>
+    <button class="gmk-music-panel__btn gmk-music-panel__btn--play" type="button" aria-label="播放" data-music-play>&#9654;</button>
+    <button class="gmk-music-panel__btn" type="button" aria-label="下一首" data-music-next>&#9654;&#9654;</button>
+  </div>
+</div>
 
 <script is:inline defer src={`${import.meta.env.BASE_URL}music-player.js`}></script>
