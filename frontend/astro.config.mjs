@@ -7,7 +7,7 @@ import { defineConfig } from 'astro/config';
 const isServerDeploy = process.env.DEPLOY_TARGET === 'server';
 
 // 服务器部署的正式访问地址（可用 DEPLOY_SITE 覆盖）
-const serverSite = process.env.DEPLOY_SITE || 'http://121.40.193.80';
+const serverSite = process.env.DEPLOY_SITE || 'https://gmkyr.website';
 
 // https://astro.build/config
 export default defineConfig({

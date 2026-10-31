@@ -1,6 +1,10 @@
 # build output
 dist/
 
+# 部署打包产物（本地临时，不入库）
+dist.tar.gz
+*.tar.gz
+
 # generated types
 .astro/
 frontend/.astro/

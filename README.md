@@ -2,6 +2,8 @@
 
 郭明坤的个人博客，前端使用 Astro，后端使用 FastAPI。
 
+**在线访问：[https://gmkyr.website](https://gmkyr.website)**
+
 ## 目录
 
 ```text
@@ -27,7 +29,9 @@ npm run build
 
 后端说明见 [backend/README.md](backend/README.md)。
 
-博客地址：<https://guomingkun8-a11y.github.io/GMK-blog/>
+博客地址：[https://gmkyr.website](https://gmkyr.website)
+
+> GitHub Pages 镜像（备用）：<https://guomingkun8-a11y.github.io/GMK-blog/>
 
 ## 背景音乐
 
